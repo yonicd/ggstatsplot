@@ -1,43 +1,49 @@
 context("t_test_subtitles")
 
-test_that("t-test subtitles work", {
-  set.seed(123)
+testthat::test_that(
+  desc = "t-test subtitles work",
+  code = {
 
-  data("bugs", package = "jmv")
+    # for reproducibility
+    set.seed(123)
 
-  # expected output from jamovi
-  jmv_df <- jmv::ttestPS(
-    data = bugs,
-    pairs = list(
-      list(i1 = "HDLF", i2 = "HDHF")
-    ),
-    bf = TRUE,
-    miss = "listwise"
-  )
+    # loading the dataset
+    data("bugs", package = "jmv")
 
-  # preparing long format dataframe
-  bugs_long <- tibble::as.tibble(x = bugs) %>%
-    dplyr::select(.data = ., HDLF, HDHF) %>%
-    tidyr::gather(data = ., "key", "value", convert = TRUE)
-
-  # output from ggstatsplot helper subtitle
-  subtitle <-
-    subtitle_ggbetween_t_bayes(
-      data = bugs_long,
-      x = key,
-      y = value,
-      paired = TRUE
+    # expected output from jamovi
+    jmv_df <- jmv::ttestPS(
+      data = bugs,
+      pairs = list(
+        list(i1 = "HDLF", i2 = "HDHF")
+      ),
+      bf = TRUE,
+      miss = "listwise"
     )
 
-  # extracting only the numbers and creating a tibble
-  subtitle_vec <- num_parser(ggstats.obj = subtitle)
+    # preparing long format dataframe
+    bugs_long <- tibble::as.tibble(x = bugs) %>%
+      dplyr::select(.data = ., HDLF, HDHF) %>%
+      tidyr::gather(data = ., "key", "value", convert = TRUE)
 
-  # testing values
+    # output from ggstatsplot helper subtitle
+    subtitle <-
+      subtitle_ggbetween_t_bayes(
+        data = bugs_long,
+        x = key,
+        y = value,
+        paired = TRUE
+      )
 
-  # t-value from student's t-test
-  testthat::expect_equal(
-    expected = as.data.frame(jmv_df$ttest)$`stat[stud]`,
-    object = subtitle_vec[[2]],
-    tolerance = 1e-3
-  )
-})
+    # extracting only the numbers and creating a tibble
+    subtitle_vec <- num_parser(ggstats.obj = subtitle)
+
+    # testing values
+
+    # t-value from student's t-test
+    testthat::expect_equal(
+      expected = as.data.frame(jmv_df$ttest)$`stat[stud]`,
+      object = subtitle_vec[[2]],
+      tolerance = 1e-3
+    )
+  }
+)

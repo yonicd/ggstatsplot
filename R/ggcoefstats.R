@@ -96,7 +96,7 @@
 #'   entire plot area. Defaults to `c(NA, NA)`.
 #' @param label.direction Character (`"both"`, `"x"`, or `"y"`) -- direction in
 #'   which to adjust position of labels (Default: `"y"`).
-#' @inheritParams lm_effsize_ci
+#' @inheritParams groupedstats::lm_effsize_ci
 #' @inheritParams broom::tidy.merMod
 #' @inheritParams broom::tidy.clm
 #' @inheritParams theme_ggstatsplot
@@ -213,12 +213,12 @@ ggcoefstats <- function(x,
   noglance.mods <- c("aovlist", "anova")
 
   # models for which the diagnostics is not available (AIC, BIC, loglik)
-  nodiagnostics.mods <- c("lmRob", "glmRob")
+  nodiagnostics.mods <- c("lmRob", "glmRob", "felm")
 
   # ============== list of objects (for statistic) ================================
 
   # models for which statistic is t-value
-  t.mods <- c("lmerMod", "lm", "nls", "lmRob", "rq", "rlm")
+  t.mods <- c("lmerMod", "lm", "nls", "lmRob", "rq", "rlm", "felm")
 
   # models for which statistic is z-value
   z.mods <- c("clm", "clmm")

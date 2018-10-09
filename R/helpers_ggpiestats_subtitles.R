@@ -21,10 +21,11 @@
 #' @param messages Decides whether messages references, notes, and warnings are
 #'   to be displayed (Default: `TRUE`).
 #' @inheritParams chisq_v_ci
-#' @inheritParams specify_decimal_p
+#' @inheritParams groupedstats::specify_decimal_p
 #'
 #' @importFrom tibble tribble
 #' @importFrom exact2x2 exact2x2
+#' @importFrom tidyr uncount
 #'
 #' @seealso \code{\link{ggpiestats}}
 #'
@@ -94,8 +95,13 @@ subtitle_contigency_tab <- function(data,
   # untable the dataframe based on the count for each obervation
   if (!base::missing(counts)) {
     data %<>%
-      untable(data = ., counts = counts) %>%
-      dplyr::select(.data = ., -counts)
+      tidyr::uncount(
+        data = .,
+        weights = counts,
+        .remove = TRUE,
+        .id = "id"
+      ) %>%
+      tibble::as_data_frame(.)
   }
 
   # ================================= Pearson's chi-square =====================
@@ -109,8 +115,9 @@ subtitle_contigency_tab <- function(data,
       phiCra = TRUE # provides Phi and Cramer's V, the latter will be displayed
     )
 
-    # preparing Cramer's V object depending on whether V is NaN or not
-    # it will be NaN in cases where there are no values of one categorial variable for level of another categorial variable
+    # preparing Cramer's V object depending on whether V is NaN or not it will
+    # be NaN in cases where there are no values of one categorial variable for
+    # level of another categorial variable
     if (is.nan(as.data.frame(jmv_chi$nom)[[4]])) {
 
       # in case Cramer's V is aNaN
@@ -282,7 +289,7 @@ subtitle_contigency_tab <- function(data,
 #'   test. Default is `NULL`, which means if there are two levels `ratio =
 #'   c(1,1)`, etc.
 #' @param legend.title Title text for the legend.
-#' @inheritParams specify_decimal_p
+#' @inheritParams groupedstats::specify_decimal_p
 #' @inheritParams subtitle_contigency_tab
 #'
 #' @examples
@@ -321,7 +328,7 @@ subtitle_onesample_proptest <-
         ))[1]
     }
 
-    # ================================= dataframe ================================================================================
+    # =================== dataframe =============================================
 
     if (base::missing(counts)) {
       data <-
@@ -340,16 +347,21 @@ subtitle_onesample_proptest <-
         tibble::as_data_frame(x = .)
     }
 
-    # ======================================================== converting counts ========================================================
+    # ========================== converting counts ================================
 
     # untable the dataframe based on the count for each obervation
     if (!base::missing(counts)) {
       data %<>%
-        untable(data = ., counts = counts) %>%
-        dplyr::select(.data = ., -counts)
+        tidyr::uncount(
+          data = .,
+          weights = counts,
+          .remove = TRUE,
+          .id = "id"
+        ) %>%
+        tibble::as_data_frame(.)
     }
 
-    # ======================================================== statistical test ========================================================
+    # ================================= statistical test =========================
 
     # conducting proportion test with jmv::propTestN()
     jmv_prop <- jmv::propTestN(

@@ -49,6 +49,7 @@
 #' @importFrom jmv contTablesPaired
 #' @importFrom paletteer scale_fill_paletteer_d
 #' @importFrom groupedstats grouped_proptest
+#' @importFrom tidyr uncount
 #'
 #' @references
 #' \url{https://cran.r-project.org/package=ggstatsplot/vignettes/ggpiestats.html}
@@ -185,8 +186,13 @@ ggpiestats <-
     # untable the dataframe based on the count for each obervation
     if (!base::missing(counts)) {
       data %<>%
-        untable(data = ., counts = counts) %>%
-        dplyr::select(.data = ., -counts)
+        tidyr::uncount(
+          data = .,
+          weights = counts,
+          .remove = TRUE,
+          .id = "id"
+        ) %>%
+        tibble::as_data_frame(.)
     }
 
     # ============================ percentage dataframe =========================

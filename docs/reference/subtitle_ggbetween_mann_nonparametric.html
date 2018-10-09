@@ -9,6 +9,8 @@
 <title>Making text subtitle for the Mann-Whitney U-test
 (between-/within-subjects designs). — subtitle_ggbetween_mann_nonparametric • ggstatsplot</title>
 
+<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
@@ -96,6 +98,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/additional.html">additional vignettes</a>
+    </li>
+    <li>
       <a href="../articles/combine_plots.html">combine_plots</a>
     </li>
     <li>
@@ -117,16 +122,16 @@
       <a href="../articles/ggscatterstats.html">ggscatterstats</a>
     </li>
     <li>
-      <a href="../articles/purrr_examples.html">using `ggstatsplot` with the `purrr` package</a>
-    </li>
-    <li>
       <a href="../articles/tests_and_coverage.html">Tests and Coverage</a>
     </li>
     <li>
       <a href="../articles/theme_ggstatsplot.html">ggstatsplot theme</a>
     </li>
     <li>
-      <a href="../articles/web_only/ggstatsplot_paper.html">plot design</a>
+      <a href="../articles/web_only/ggstatsplot_paper.html">ggstatsplot: ggplot2 Based Plots with Statistical Details</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/purrr_examples.html">using `ggstatsplot` with the `purrr` package</a>
     </li>
   </ul>
 </li>
@@ -174,7 +179,7 @@
     </div>
 
     <pre class="usage"><span class='fu'>subtitle_ggbetween_mann_nonparametric</span>(<span class='no'>data</span>, <span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>paired</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>messages</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>3</span>, <span class='kw'>messages</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='no'>...</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -205,6 +210,10 @@ taken.</p></td>
       <th>messages</th>
       <td><p>Decides whether messages references, notes, and warnings are
 to be displayed (Default: <code>TRUE</code>).</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional arguments (ignored).</p></td>
     </tr>
     </table>
     

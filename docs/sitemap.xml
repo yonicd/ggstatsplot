@@ -16,10 +16,16 @@
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/combine_plots.html</loc>
   </url>
   <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/cor_tets_ci.html</loc>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/compound.html</loc>
+  </url>
+  <url>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/cor_test_ci.html</loc>
   </url>
   <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/ggbetweenstats.html</loc>
+  </url>
+  <url>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/ggbetweenstats_switch.html</loc>
   </url>
   <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/ggcoefstats.html</loc>
@@ -61,9 +67,6 @@
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/intent_morality.html</loc>
   </url>
   <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/lm_effsize_ci.html</loc>
-  </url>
-  <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/movies_long.html</loc>
   </url>
   <url>
@@ -79,13 +82,13 @@
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/pipe.html</loc>
   </url>
   <url>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/reexports.html</loc>
+  </url>
+  <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/robcor_ci.html</loc>
   </url>
   <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/signif_column.html</loc>
-  </url>
-  <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/specify_decimal_p.html</loc>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/set_cwd.html</loc>
   </url>
   <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/subtitle_contigency_tab.html</loc>
@@ -124,6 +127,9 @@
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/t1way_ci.html</loc>
   </url>
   <url>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/tfz_labeller.html</loc>
+  </url>
+  <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/theme_corrmat.html</loc>
   </url>
   <url>
@@ -142,10 +148,7 @@
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/Titanic_full.html</loc>
   </url>
   <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/tz_labeller.html</loc>
-  </url>
-  <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/untable.html</loc>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/additional.html</loc>
   </url>
   <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/combine_plots.html</loc>
@@ -169,9 +172,6 @@
     <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/ggscatterstats.html</loc>
   </url>
   <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/purrr_examples.html</loc>
-  </url>
-  <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/tests_and_coverage.html</loc>
   </url>
   <url>
@@ -179,5 +179,8 @@
   </url>
   <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/web_only/ggstatsplot_paper.html</loc>
+  </url>
+  <url>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/web_only/purrr_examples.html</loc>
   </url>
 </urlset>

@@ -17,10 +17,6 @@ Quartile) \code{coef} times the Inter-Quartile Range (IQR) (Default: \code{1.5})
 \description{
 Returns a logical vector
 }
-\seealso{
-Other helper_stats: \code{\link{signif_column}},
-  \code{\link{untable}}
-}
 \author{
 Indrajeet Patil
 }
