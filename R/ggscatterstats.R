@@ -10,6 +10,8 @@
 #'   taken.
 #' @param x A vector containing the explanatory variable.
 #' @param y The response - a vector of length the number of rows of `x`.
+#' @param bf.message Logical. Decides whether to display Bayes Factor in favor
+#'   of *null* hypothesis **for parametric test** (Default: `bf.message = FALSE`).
 #' @param label.var Variable to use for points labels. **Must** be entered as a
 #'   character string e.g. `"y"`
 #' @param label.expression An expression evaluating to a logical vector that
@@ -72,8 +74,6 @@
 #' @importFrom dplyr mutate_at
 #' @importFrom dplyr mutate_if
 #' @importFrom dplyr filter
-#' @importFrom magrittr "%<>%"
-#' @importFrom magrittr "%>%"
 #' @importFrom rlang enquo
 #' @importFrom rlang quo_name
 #' @importFrom rlang parse_expr
@@ -129,6 +129,9 @@ ggscatterstats <-
   function(data,
              x,
              y,
+             type = "pearson",
+             bf.prior = 0.707,
+             bf.message = FALSE,
              label.var = NULL,
              label.expression = NULL,
              xlab = NULL,
@@ -157,7 +160,6 @@ ggscatterstats <-
              xsize = 0.7,
              ysize = 0.7,
              centrality.para = NULL,
-             type = "pearson",
              results.subtitle = TRUE,
              title = NULL,
              subtitle = NULL,
@@ -193,10 +195,10 @@ ggscatterstats <-
 
     # preparing the dataframe
     data <- dplyr::full_join(
-      # dataframe where x and y are named "x...internal" and "y...internal"
-      # these bizarre names are used to protect against the possibility
-      # that user has already used "x" and "y" as variable names, in which case the
-      # full_join() will create variable names that will create problems
+      # bizarre names like "x...internal" and "y...internal" are used to protect
+      # against the possibility that user has already used "x" and "y" as
+      # variable names, in which case the full_join() will create variable names
+      # that will create problems
       x = data %>%
         dplyr::select(
           .data = .,
@@ -215,7 +217,7 @@ ggscatterstats <-
         tibble::rowid_to_column(., var = "rowid"),
       by = "rowid"
     ) %>%
-      dplyr::select(.data = ., -rowid) %>%
+      dplyr::select(.data = ., -rowid) %>% # remove NAs only from x & y columns
       dplyr::filter(.data = ., !is.na(x...internal), !is.na(y...internal)) %>%
       tibble::as_data_frame(x = .)
 
@@ -246,7 +248,7 @@ ggscatterstats <-
     #--------------------------------- creating results subtitle --------------------------------------
     #
     # adding a subtitle with statistical results
-    if (results.subtitle == TRUE) {
+    if (isTRUE(results.subtitle)) {
       subtitle <- subtitle_ggscatterstats(
         data = data,
         x = x...internal,
@@ -259,6 +261,24 @@ ggscatterstats <-
         messages = messages,
         k = k
       )
+
+      # preparing the BF message for NULL
+      if (isTRUE(bf.message)) {
+        bf.caption.text <-
+          bf_corr_test(
+            data = data,
+            x = x...internal,
+            y = y...internal,
+            bf.prior = bf.prior,
+            caption = caption,
+            output = "caption"
+          )
+      }
+
+      # if bayes factor message needs to be displayed
+      if (type %in% c("pearson", "parametric", "p") && isTRUE(bf.message)) {
+        caption <- bf.caption.text
+      }
     }
 
     #------------------------------------ basic plot -----------------------------
@@ -463,7 +483,7 @@ ggscatterstats <-
         plot +
         ggrepel::geom_label_repel(
           data = label_data,
-          mapping = aes_string(
+          mapping = ggplot2::aes_string(
             label = label.var
           ),
           fontface = "bold",
@@ -511,7 +531,10 @@ ggscatterstats <-
       base::message(cat(
         crayon::red("Warning: "),
         crayon::blue(
-          "The plot is not a `ggplot` object and therefore can't be further modified with `ggplot2` functions.\n"
+          "The output is not a `ggplot` object and can't be further modified with `ggplot2` functions.\n"
+        ),
+        crayon::blue(
+          "In case you want a `ggplot` object, set `marginal = FALSE`.\n"
         ),
         sep = ""
       ))

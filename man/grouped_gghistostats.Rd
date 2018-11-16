@@ -6,10 +6,10 @@
 \usage{
 grouped_gghistostats(data, x, grouping.var, title.prefix = "Group",
   binwidth = NULL, bar.measure = "count", xlab = NULL,
-  title = NULL, subtitle = NULL, caption = NULL,
-  type = "parametric", test.value = 0, bf.prior = 0.707,
-  bf.message = FALSE, robust.estimator = "onestep", nboot = 500,
-  k = 3, ggtheme = ggplot2::theme_bw(), ggstatsplot.layer = TRUE,
+  subtitle = NULL, caption = NULL, type = "parametric",
+  test.value = 0, bf.prior = 0.707, bf.message = FALSE,
+  robust.estimator = "onestep", nboot = 500, k = 3,
+  ggtheme = ggplot2::theme_bw(), ggstatsplot.layer = TRUE,
   fill.gradient = FALSE, low.color = "#0072B2",
   high.color = "#D55E00", bar.fill = "grey50",
   results.subtitle = TRUE, centrality.para = "mean",
@@ -45,8 +45,6 @@ in the same plot (only available from \code{ggplot2 3.0.1} onward).}
 
 \item{xlab}{Label for \code{x} axis variable.}
 
-\item{title}{The text for the plot title.}
-
 \item{subtitle}{The text for the plot subtitle \emph{if} you don't want results
 from one sample test to be displayed (i.e. \code{results.subtitle} should be set
 to \code{FALSE}).}
@@ -74,7 +72,8 @@ This will work only if \code{results.subtitle = TRUE}.}
 \item{nboot}{Number of bootstrap samples for robust one-sample location test
 (Default: \code{100}).}
 
-\item{k}{Number of digits after decimal point (should be an integer) (Default: \code{k = 3}).}
+\item{k}{Number of digits after decimal point (should be an integer)
+(Default: \code{k = 3}).}
 
 \item{ggtheme}{A function, \code{ggplot2} theme name. Default value is
 \code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from

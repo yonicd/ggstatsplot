@@ -205,7 +205,7 @@ ggpiestats <-
       dplyr::mutate_at(
         .tbl = .,
         .vars = "main",
-        .funs = ~base::as.factor(x = .)
+        .funs = ~base::droplevels(x = base::as.factor(x = .))
       ) %>%
       stats::na.omit(.)
 
@@ -216,7 +216,8 @@ ggpiestats <-
           .tbl = .,
           .vars = "condition",
           .funs = ~base::droplevels(x = base::as.factor(x = .))
-        )
+        ) %>%
+        stats::na.omit(.)
     }
 
     # convert the data into percentages; group by conditional variable if needed
@@ -384,7 +385,8 @@ ggpiestats <-
     # if facetting by condition is happening
     if (!base::missing(condition)) {
       if (isTRUE(facet.proptest)) {
-        # merging dataframe containing results from the proportion test with counts and percentage dataframe
+        # merging dataframe containing results from the proportion test with
+        # counts and percentage dataframe
         df2 <-
           dplyr::full_join(
             x = df,
@@ -405,36 +407,36 @@ ggpiestats <-
             )
           ) %>%
           stats::na.omit(.)
+
+        # display grouped proportion test results
+        if (isTRUE(messages)) {
+          # tell the user what these results are
+          base::message(cat(
+            crayon::green("Note: "),
+            crayon::blue("Results from faceted one-sample proportion tests:\n"),
+            sep = ""
+          ))
+
+          # print the tibble and leave out unnecessary columns
+          print(tibble::as.tibble(df2) %>%
+            dplyr::select(.data = ., -c(main:perc)))
+        }
       }
 
-      # running Pearson's Chi-square test of independence using jmv::contTables
-      if (!isTRUE(paired)) {
-        subtitle <- subtitle_contigency_tab(
-          data = data,
-          main = main,
-          condition = condition,
-          nboot = nboot,
-          paired = FALSE,
-          stat.title = stat.title,
-          conf.level = 0.95,
-          conf.type = "norm",
-          messages = messages,
-          k = k
-        )
-      } else if (isTRUE(paired)) {
-        subtitle <- subtitle_contigency_tab(
-          data = data,
-          main = main,
-          condition = condition,
-          nboot = nboot,
-          paired = TRUE,
-          stat.title = stat.title,
-          conf.level = 0.95,
-          conf.type = "norm",
-          messages = messages,
-          k = k
-        )
-      }
+      # running approprate statistical test
+      # unpaired: Pearson's Chi-square test of independence
+      subtitle <- subtitle_contigency_tab(
+        data = data,
+        main = main,
+        condition = condition,
+        nboot = nboot,
+        paired = paired,
+        stat.title = stat.title,
+        conf.level = 0.95,
+        conf.type = "norm",
+        messages = messages,
+        k = k
+      )
 
       # ======================= facetted proportion test ================================
 

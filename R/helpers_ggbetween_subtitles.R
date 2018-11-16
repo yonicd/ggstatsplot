@@ -15,10 +15,11 @@ bf_message_ttest <- function(jmv_results,
           "(BF"["01"],
           ") = ",
           bf,
-          ", log"["e"],
-          "(error) = ",
-          bf_error,
-          "%, Prior width = ",
+          # ", log"["e"],
+          # "(error) = ",
+          # bf_error,
+          # "%",
+          ", Prior width = ",
           bf_prior
         )
     ),
@@ -28,10 +29,10 @@ bf_message_ttest <- function(jmv_results,
         x = (1 / as.data.frame(jmv_results$ttest)$`stat[bf]`),
         base = exp(1)
       ), k = 1),
-      bf_error = ggstatsplot::specify_decimal_p(x = log(
-        x = (1 / as.data.frame(jmv_results$ttest)$`err[bf]`),
-        base = exp(1)
-      ), k = 1),
+      # bf_error = ggstatsplot::specify_decimal_p(x = log(
+      #   x = (1 / as.data.frame(jmv_results$ttest)$`err[bf]`),
+      #   base = exp(1)
+      # ), k = 1),
       bf_prior = ggstatsplot::specify_decimal_p(x = bf.prior, k = 3)
     )
   )
@@ -62,8 +63,6 @@ bf_message_ttest <- function(jmv_results,
 #' @inheritParams groupedstats::specify_decimal_p
 #'
 #' @importFrom dplyr select
-#' @importFrom magrittr "%<>%"
-#' @importFrom magrittr "%>%"
 #' @importFrom rlang enquo
 #' @importFrom stats lm
 #'
@@ -280,17 +279,17 @@ subtitle_ggbetween_anova_parametric <-
 #' @author Indrajeet Patil
 #'
 #' @param effsize.noncentral Logical indicating whether to use non-central
-#'   *t*-distributions for computing the 95% confidence interval for Cohen's *d*
+#'   *t*-distributions for computing the confidence interval for Cohen's *d*
 #'   or Hedge's *g* (Default: `FALSE`).
+#'  @param conf.level Scalar between 0 and 1. If unspecified, the defaults return 95%
+#'   lower and upper confidence intervals (`0.95`).
 #' @param ... Additional arguments (ignored).
 #' @inheritParams subtitle_ggbetween_anova_parametric
 #' @inheritParams stats::t.test
 #' @inheritParams groupedstats::specify_decimal_p
 #'
 #' @importFrom dplyr select
-#' @importFrom magrittr "%<>%"
-#' @importFrom magrittr "%>%"
-#' @importFrom rlang enquo
+#' @importFrom rlang !! enquo
 #' @importFrom stats t.test
 #' @importFrom effsize cohen.d
 #'
@@ -325,6 +324,7 @@ subtitle_ggbetween_t_parametric <-
              paired = FALSE,
              effsize.type = "g",
              effsize.noncentral = FALSE,
+             conf.level = 0.95,
              var.equal = FALSE,
              k = 3,
              ...) {
@@ -349,7 +349,7 @@ subtitle_ggbetween_t_parametric <-
     # sample size
     sample_size <- nrow(data)
 
-    # setting up the anova model and getting its summary and effect size
+    # setting up the t-test model and getting its summary
     t_stat <-
       stats::t.test(
         formula = y ~ x,
@@ -360,22 +360,37 @@ subtitle_ggbetween_t_parametric <-
         na.action = na.omit
       )
 
+    # deciding which effect size to use
+    if (effsize.type == "unbiased" || effsize.type == "g") {
+      # Hedge's g is an unbiased estimate of the effect size
+      hedges.correction <- TRUE
+    } else if (effsize.type == "biased" || effsize.type == "d") {
+      hedges.correction <- FALSE
+    }
+
+    # effect size object
+    t_effsize <-
+      effsize::cohen.d(
+        formula = y ~ x,
+        data = data,
+        paired = paired,
+        hedges.correction = hedges.correction,
+        na.rm = TRUE,
+        conf.level = conf.level,
+        noncentral = effsize.noncentral
+      )
+
+    # when paired samples t-test is run df is going to be integer
+    if (isTRUE(paired)) {
+      k.df <- 0
+    } else {
+      k.df <- k
+    }
+
+    # preparing the subtitle
     if (effsize.type == "unbiased" || effsize.type == "g") {
 
-      # Hedge's g is an unbiased estimate of the effect size
-      t_effsize <-
-        effsize::cohen.d(
-          formula = y ~ x,
-          data = data,
-          paired = paired,
-          hedges.correction = TRUE,
-          na.rm = TRUE,
-          conf.level = 0.95,
-          noncentral = effsize.noncentral
-        )
-
-      # t_stat input represents the t-test object summary derived from `stats`
-      # library
+      # preparing subtitle with Hedge's
       subtitle <-
         # extracting the elements of the statistical object
         base::substitute(
@@ -406,7 +421,7 @@ subtitle_ggbetween_t_parametric <-
             ),
           env = base::list(
             estimate = ggstatsplot::specify_decimal_p(x = t_stat[[1]], k),
-            df = ggstatsplot::specify_decimal_p(x = t_stat[[2]], k),
+            df = ggstatsplot::specify_decimal_p(x = t_stat[[2]], k.df),
             pvalue = ggstatsplot::specify_decimal_p(
               x = t_stat[[3]],
               k,
@@ -420,20 +435,7 @@ subtitle_ggbetween_t_parametric <-
         )
     } else if (effsize.type == "biased" || effsize.type == "d") {
 
-      # Cohen's d is a biased estimate of the effect size
-      t_effsize <-
-        effsize::cohen.d(
-          formula = y ~ x,
-          data = data,
-          paired = paired,
-          hedges.correction = FALSE,
-          na.rm = TRUE,
-          conf.level = 0.95,
-          noncentral = effsize.noncentral
-        )
-
-      # t_stat input represents the t-test object summary derived from `stats`
-      # library
+      # preparing subtitle with Cohen's d
       subtitle <-
         # extracting the elements of the statistical object
         base::substitute(
@@ -464,7 +466,7 @@ subtitle_ggbetween_t_parametric <-
             ),
           env = base::list(
             estimate = ggstatsplot::specify_decimal_p(x = t_stat[[1]], k),
-            df = ggstatsplot::specify_decimal_p(x = t_stat[[2]], k),
+            df = ggstatsplot::specify_decimal_p(x = t_stat[[2]], k.df),
             pvalue = ggstatsplot::specify_decimal_p(
               x = t_stat[[3]],
               k,
@@ -495,8 +497,6 @@ subtitle_ggbetween_t_parametric <-
 #' @inheritParams groupedstats::specify_decimal_p
 #'
 #' @importFrom dplyr select
-#' @importFrom magrittr "%<>%"
-#' @importFrom magrittr "%>%"
 #' @importFrom rlang enquo
 #' @importFrom stats wilcox.test
 #' @importFrom coin wilcox_test
@@ -620,7 +620,7 @@ subtitle_ggbetween_mann_nonparametric <-
   }
 
 #' @title Making text subtitle for the robust t-test
-#'   (between-subjects designs).
+#'   (between- and within-subjects designs).
 #' @name subtitle_ggbetween_t_rob
 #' @author Indrajeet Patil
 #'
@@ -629,11 +629,9 @@ subtitle_ggbetween_mann_nonparametric <-
 #' @param ... Additional arguments (ignored).
 #' @inheritParams subtitle_ggbetween_t_parametric
 #' @inheritParams groupedstats::specify_decimal_p
-#' @inheritParams t1way_ci
+#' @inheritParams yuend_ci
 #'
 #' @importFrom dplyr select
-#' @importFrom magrittr "%<>%"
-#' @importFrom magrittr "%>%"
 #' @importFrom rlang enquo
 #' @importFrom WRS2 yuen
 #' @importFrom WRS2 yuen.effect.ci
@@ -656,6 +654,19 @@ subtitle_ggbetween_mann_nonparametric <-
 #'   k = 1,
 #'   tr = 0.2
 #' )
+#' 
+#' # within-subjects design
+#' ggstatsplot::subtitle_ggbetween_t_rob(
+#'   data = dplyr::filter(
+#'     ggstatsplot::intent_morality,
+#'     condition %in% c("accidental", "attempted"),
+#'     harm == "Poisoning"
+#'   ),
+#'   x = condition,
+#'   y = rating,
+#'   paired = TRUE,
+#'   nboot = 25
+#' )
 #' @export
 
 # function body
@@ -664,7 +675,10 @@ subtitle_ggbetween_t_rob <-
              x,
              y,
              tr = 0.1,
+             paired = FALSE,
              nboot = 100,
+             conf.level = 0.95,
+             conf.type = "norm",
              k = 3,
              messages = TRUE,
              ...) {
@@ -679,33 +693,145 @@ subtitle_ggbetween_t_rob <-
 
     # convert the grouping variable to factor and drop unused levels
     data %<>%
-      stats::na.omit(.) %>%
       dplyr::mutate_at(
         .tbl = .,
         .vars = "x",
         .funs = ~base::droplevels(x = base::as.factor(x = .))
       )
 
-    # sample size
-    sample_size <- nrow(data)
+    ## ---------------------------- between-subjects design --------------------
 
-    # Yuen's test for trimmed means
-    t_robust_stat <-
-      WRS2::yuen(
-        formula = y ~ x,
-        data = data,
-        tr = tr
-      )
+    # running bayesian analysis
+    if (!isTRUE(paired)) {
 
-    # computing effect sizes
-    t_robust_effsize <-
-      WRS2::yuen.effect.ci(
-        formula = y ~ x,
+      # removing NAs
+      data %<>%
+        stats::na.omit(.)
+
+      # sample size
+      sample_size <- nrow(data)
+
+      # Yuen's test for trimmed means
+      t_robust_stat <-
+        WRS2::yuen(
+          formula = y ~ x,
+          data = data,
+          tr = tr
+        )
+
+      # computing effect sizes
+      t_robust_effsize <-
+        WRS2::yuen.effect.ci(
+          formula = y ~ x,
+          data = data,
+          tr = tr,
+          nboot = nboot,
+          alpha = 1 - conf.level
+        )
+
+      # t_robust_stat input represents the t-test object summary derived from WRS2
+      # library
+      subtitle <-
+        # extracting the elements of the statistical object
+        base::substitute(
+          expr =
+            paste(
+              italic("t"),
+              "(",
+              df,
+              ") = ",
+              estimate,
+              ", ",
+              italic("p"),
+              " = ",
+              pvalue,
+              ", ",
+              italic(xi),
+              " = ",
+              effsize,
+              ", 95% CI [",
+              LL,
+              ", ",
+              UL,
+              "]",
+              ", ",
+              italic("n"),
+              " = ",
+              n
+            ),
+          env = base::list(
+            estimate = ggstatsplot::specify_decimal_p(x = t_robust_stat$test[[1]], k),
+            df = ggstatsplot::specify_decimal_p(x = t_robust_stat$df[[1]], k),
+            pvalue = ggstatsplot::specify_decimal_p(
+              x = t_robust_stat$p.value[[1]],
+              k,
+              p.value = TRUE
+            ),
+            effsize = ggstatsplot::specify_decimal_p(x = t_robust_effsize$effsize[[1]], k),
+            LL = ggstatsplot::specify_decimal_p(x = t_robust_effsize$CI[[1]][[1]], k),
+            UL = ggstatsplot::specify_decimal_p(x = t_robust_effsize$CI[[2]][[1]], k),
+            n = sample_size
+          )
+        )
+
+      ## ---------------------------- within-subjects design ---------------------
+    } else {
+
+      # getting dataframe of results from the custom function
+      yuend_results <- yuend_ci(
         data = data,
+        x = x,
+        y = y,
         tr = tr,
         nboot = nboot,
-        alpha = 0.05
+        conf.level = conf.level,
+        conf.type = conf.type
       )
+
+      # t_robust_stat input represents the t-test object summary derived from WRS2 library
+      subtitle <-
+        # extracting the elements of the statistical object
+        base::substitute(
+          expr =
+            paste(
+              italic("t"),
+              "(",
+              df,
+              ") = ",
+              estimate,
+              ", ",
+              italic("p"),
+              " = ",
+              pvalue,
+              ", ",
+              italic(xi),
+              " = ",
+              effsize,
+              ", 95% CI [",
+              LL,
+              ", ",
+              UL,
+              "]",
+              ", ",
+              italic("n"),
+              " = ",
+              n
+            ),
+          env = base::list(
+            estimate = ggstatsplot::specify_decimal_p(x = yuend_results$`t-value`[[1]], k),
+            df = ggstatsplot::specify_decimal_p(x = yuend_results$df[[1]], k),
+            pvalue = ggstatsplot::specify_decimal_p(
+              x = yuend_results$`p-value`[[1]],
+              k,
+              p.value = TRUE
+            ),
+            effsize = ggstatsplot::specify_decimal_p(x = yuend_results$xi[[1]], k),
+            LL = ggstatsplot::specify_decimal_p(x = yuend_results$conf.low[[1]], k),
+            UL = ggstatsplot::specify_decimal_p(x = yuend_results$conf.high[[1]], k),
+            n = yuend_results$n[[1]]
+          )
+        )
+    }
 
     # displaying message about bootstrap
     if (isTRUE(messages)) {
@@ -720,50 +846,6 @@ subtitle_ggbetween_t_rob <-
       ))
     }
 
-    # t_robust_stat input represents the t-test object summary derived from WRS2 library
-    subtitle <-
-      # extracting the elements of the statistical object
-      base::substitute(
-        expr =
-          paste(
-            italic("t"),
-            "(",
-            df,
-            ") = ",
-            estimate,
-            ", ",
-            italic("p"),
-            " = ",
-            pvalue,
-            ", ",
-            italic(xi),
-            " = ",
-            effsize,
-            ", 95% CI [",
-            LL,
-            ", ",
-            UL,
-            "]",
-            ", ",
-            italic("n"),
-            " = ",
-            n
-          ),
-        env = base::list(
-          estimate = ggstatsplot::specify_decimal_p(x = t_robust_stat$test[[1]], k),
-          df = ggstatsplot::specify_decimal_p(x = t_robust_stat$df[[1]], k),
-          pvalue = ggstatsplot::specify_decimal_p(
-            x = t_robust_stat$p.value[[1]],
-            k,
-            p.value = TRUE
-          ),
-          effsize = ggstatsplot::specify_decimal_p(x = t_robust_effsize$effsize[[1]], k),
-          LL = ggstatsplot::specify_decimal_p(x = t_robust_effsize$CI[[1]][[1]], k),
-          UL = ggstatsplot::specify_decimal_p(x = t_robust_effsize$CI[[2]][[1]], k),
-          n = sample_size
-        )
-      )
-
     # return the subtitle
     return(subtitle)
   }
@@ -777,10 +859,12 @@ subtitle_ggbetween_t_rob <-
 #' @param ... Additional arguments (ignored).
 #' @inheritParams subtitle_ggbetween_t_parametric
 #'
-#' @importFrom jmv ttestIS
-#' @importFrom jmv ttestPS
+#' @importFrom jmv ttestIS ttestPS
 #'
 #' @examples
+#' 
+#' # for reproducibility
+#' set.seed(123)
 #' 
 #' # between-subjects design
 #' 
@@ -836,7 +920,8 @@ subtitle_ggbetween_t_bayes <- function(data,
   if (!isTRUE(paired)) {
 
     # removing NAs
-    data %<>% stats::na.omit(.)
+    data %<>%
+      stats::na.omit(.)
 
     # sample size
     sample_size <- nrow(data)
@@ -858,23 +943,7 @@ subtitle_ggbetween_t_bayes <- function(data,
   } else if (isTRUE(paired)) {
 
     # jamovi needs data to be wide format and not long format
-    data_wide <-
-      data %>%
-      dplyr::group_by(.data = ., x) %>%
-      dplyr::mutate(.data = ., rowid = dplyr::row_number()) %>%
-      dplyr::ungroup(x = .) %>%
-      stats::na.omit(.) %>%
-      dplyr::group_by(.data = ., rowid) %>%
-      dplyr::mutate(.data = ., n = dplyr::n()) %>%
-      dplyr::ungroup(x = .) %>%
-      dplyr::filter(.data = ., n == 2) %>%
-      dplyr::select(.data = ., x, y, rowid) %>%
-      tidyr::spread(
-        data = .,
-        key = x,
-        value = y,
-        convert = TRUE
-      )
+    data_wide <- long_to_wide_converter(data = data, x = x, y = y)
 
     # dependent samples design
     jmv_results <- jmv::ttestPS(
@@ -907,10 +976,13 @@ subtitle_ggbetween_t_bayes <- function(data,
         "(BF"["10"],
         ") = ",
         bf,
-        ", log"["e"],
-        "(error) = ",
-        bf_error,
-        "% , ",
+        ", Prior width = ",
+        bf_prior,
+        ", ",
+        # ", log"["e"],
+        # "(error) = ",
+        # bf_error,
+        # "% , ",
         italic("d"),
         " = ",
         effsize,
@@ -922,7 +994,10 @@ subtitle_ggbetween_t_bayes <- function(data,
     env = base::list(
       # df is integer value for Student's t-test
       df = as.data.frame(jmv_results$ttest)$`df[stud]`,
-      estimate = ggstatsplot::specify_decimal_p(x = as.data.frame(jmv_results$ttest)$`stat[stud]`, k),
+      estimate = ggstatsplot::specify_decimal_p(
+        x = as.data.frame(jmv_results$ttest)$`stat[stud]`,
+        k = k
+      ),
       bf = ggstatsplot::specify_decimal_p(
         x = log(
           x = as.data.frame(jmv_results$ttest)$`stat[bf]`,
@@ -930,13 +1005,17 @@ subtitle_ggbetween_t_bayes <- function(data,
         ),
         k = 1
       ),
-      bf_error = ggstatsplot::specify_decimal_p(
-        x = log(
-          x = as.data.frame(jmv_results$ttest)$`err[bf]`,
-          base = exp(1)
-        ),
-        k = 1
+      bf_prior = ggstatsplot::specify_decimal_p(
+        x = bf.prior,
+        k = 3
       ),
+      # bf_error = ggstatsplot::specify_decimal_p(
+      #   x = log(
+      #     x = as.data.frame(jmv_results$ttest)$`err[bf]`,
+      #     base = exp(1)
+      #   ),
+      #   k = 1
+      # ),
       effsize = ggstatsplot::specify_decimal_p(x = as.data.frame(jmv_results$ttest)$`es[stud]`, k),
       n = sample_size
     )
@@ -959,8 +1038,6 @@ subtitle_ggbetween_t_bayes <- function(data,
 #' @inheritParams groupedstats::specify_decimal_p
 #'
 #' @importFrom dplyr select
-#' @importFrom magrittr "%<>%"
-#' @importFrom magrittr "%>%"
 #' @importFrom rlang enquo
 #' @importFrom stats kruskal.test
 #'
@@ -1008,7 +1085,7 @@ subtitle_ggbetween_kw_nonparametric <-
       na.action = na.omit
     )
 
-    # aov_stat input represents the anova object summary derived from car library
+    # preparing the subtitle
     subtitle <-
       # extracting the elements of the statistical object
       base::substitute(
@@ -1070,14 +1147,11 @@ subtitle_ggbetween_kw_nonparametric <-
 #' @inheritParams groupedstats::specify_decimal_p
 #'
 #' @importFrom dplyr select
-#' @importFrom magrittr "%<>%"
-#' @importFrom magrittr "%>%"
 #' @importFrom rlang enquo
 #'
 #' @examples
 #' 
-#' # the following examples are not run in the manual because bootstrapping is taking too much
-#' # time
+#' # examples not executed due to time constraints
 #' \dontrun{
 #' # for reproducibility
 #' set.seed(123)
@@ -1132,7 +1206,8 @@ subtitle_ggbetween_rob_anova <-
     # sample size
     sample_size <- nrow(data)
 
-    # setting up the Bootstrap version of the heteroscedastic one-way ANOVA for trimmed means
+    # setting up the Bootstrap version of the heteroscedastic one-way ANOVA for
+    # trimmed means
     robust_aov_stat <- t1way_ci(
       data = data,
       x = x,
@@ -1156,7 +1231,8 @@ subtitle_ggbetween_rob_anova <-
       ))
     }
 
-    # robust_aov_stat input represents the robust anova object summary derived from WRS2 library
+    # robust_aov_stat input represents the robust anova object summary derived
+    # from WRS2 library
     subtitle <-
       # extracting the elements of the statistical object
       base::substitute(

@@ -7,6 +7,9 @@
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/bartlett_message.html</loc>
   </url>
   <url>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/bf_corr_test.html</loc>
+  </url>
+  <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/check_outlier.html</loc>
   </url>
   <url>
@@ -65,6 +68,12 @@
   </url>
   <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/intent_morality.html</loc>
+  </url>
+  <url>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/long_to_wide_converter.html</loc>
+  </url>
+  <url>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/mean_labeller.html</loc>
   </url>
   <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/movies_long.html</loc>
@@ -148,10 +157,10 @@
     <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/Titanic_full.html</loc>
   </url>
   <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/additional.html</loc>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//reference/yuend_ci.html</loc>
   </url>
   <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/combine_plots.html</loc>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/additional.html</loc>
   </url>
   <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/ggbetweenstats.html</loc>
@@ -172,15 +181,18 @@
     <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/ggscatterstats.html</loc>
   </url>
   <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/tests_and_coverage.html</loc>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/web_only/combine_plots.html</loc>
   </url>
   <url>
-    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/theme_ggstatsplot.html</loc>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/web_only/gallery.html</loc>
   </url>
   <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/web_only/ggstatsplot_paper.html</loc>
   </url>
   <url>
     <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/web_only/purrr_examples.html</loc>
+  </url>
+  <url>
+    <loc>https://indrajeetpatil.github.io/ggstatsplot//articles/web_only/theme_ggstatsplot.html</loc>
   </url>
 </urlset>

@@ -78,19 +78,17 @@
 #'
 #' @import ggplot2
 #'
-#' @importFrom dplyr select group_by summarize vars contains arrange
-#' @importFrom dplyr mutate mutate_at mutate_if
+#' @importFrom dplyr select group_by arrange mutate mutate_at mutate_if
 #' @importFrom ggrepel geom_label_repel
 #' @importFrom WRS2 t1way yuen yuen.effect.ci
 #' @importFrom effsize cohen.d
 #' @importFrom sjstats eta_sq omega_sq
 #' @importFrom stats na.omit t.test oneway.test
 #' @importFrom coin wilcox_test statistic
-#' @importFrom rlang enquo quo_name
+#' @importFrom rlang enquo quo_name !!
 #' @importFrom ggrepel geom_label_repel
 #' @importFrom crayon blue green red yellow
 #' @importFrom paletteer scale_color_paletteer_d scale_fill_paletteer_d
-#' @importFrom groupedstats grouped_summary
 #'
 #' @seealso \code{\link{grouped_ggbetweenstats}}
 #'
@@ -181,17 +179,37 @@ ggbetweenstats <- function(data,
                            mean.ci = FALSE,
                            mean.size = 5,
                            mean.color = "darkred",
+                           point.jitter.width = NULL,
+                           point.jitter.height = 0.1,
+                           point.dodge.width = 0.60,
                            ggtheme = ggplot2::theme_bw(),
                            ggstatsplot.layer = TRUE,
                            package = "RColorBrewer",
                            palette = "Dark2",
                            direction = 1,
-                           point.jitter.width = NULL,
-                           point.jitter.height = 0.1,
-                           point.dodge.width = 0.60,
                            messages = TRUE) {
 
-  # variable names ---------------------------------------------------------------
+  # checks ---------------------------------------------------------------------
+
+  # create a list of function call to check for label.expression
+  param_list <- base::as.list(base::match.call())
+
+  # check that x and outlier.label are different
+  if (("x" %in% names(param_list)) && ("outlier.label" %in% names(param_list))) {
+    if (as.character(param_list$x) == as.character(param_list$outlier.label)) {
+      base::message(cat(
+        crayon::red("Error: "),
+        crayon::blue(
+          "Identical variable (",
+          crayon::yellow(param_list$x),
+          ") was used for both grouping and outlier labeling, which is not allowed."
+        ),
+        sep = ""
+      ))
+    }
+  }
+
+  # variable names -------------------------------------------------------------
 
   # preparing a dataframe with variable names
   lab.df <- colnames(x = dplyr::select(
@@ -269,6 +287,14 @@ ggbetweenstats <- function(data,
       ggplot2::aes(color = factor(x))
     )
 
+  # single component for creating geom_violin
+  ggbetweenstats_geom_violin <- ggplot2::geom_violin(
+    width = 0.5,
+    alpha = 0.2,
+    fill = "white",
+    na.rm = TRUE
+  )
+
   if (plot.type == "box" || plot.type == "boxviolin") {
     # adding a boxplot
     if (isTRUE(outlier.tagging)) {
@@ -313,21 +339,11 @@ ggbetweenstats <- function(data,
     }
     if (plot.type == "boxviolin") {
       plot <- plot +
-        ggplot2::geom_violin(
-          width = 0.5,
-          alpha = 0.2,
-          fill = "white",
-          na.rm = TRUE
-        )
+        ggbetweenstats_geom_violin
     }
   } else if (plot.type == "violin") {
     plot <- plot +
-      ggplot2::geom_violin(
-        width = 0.5,
-        alpha = 0.2,
-        fill = "white",
-        na.rm = TRUE
-      )
+      ggbetweenstats_geom_violin
   }
 
   # subtitle preparation -------------------------------------------------------
@@ -445,14 +461,14 @@ ggbetweenstats <- function(data,
 
   # outlier tagging ------------------------------------------------------------
 
-  # if outlier.tagging is set to TRUE, first figure out what labels need to be
-  # attached to the outlier. If outlier label is not provided, outlier labels
-  # will just be values of the y vector if the outlier tag has been provided,
-  # just use the dataframe already created
+  # if `outlier.tagging` is set to `TRUE`, first figure out what labels need to
+  # be attached to the outlier. If `outlier.label` is not provided, outlier
+  # labels will just be values of the `y` vector. If the outlier tag has been
+  # provided, just use the dataframe already created.
 
   if (isTRUE(outlier.tagging)) {
     # finding and tagging the outliers
-    data_df <- data %>%
+    data_outlier_label <- data %>%
       dplyr::group_by(.data = ., x) %>%
       dplyr::mutate(
         .data = .,
@@ -464,87 +480,41 @@ ggbetweenstats <- function(data,
           yes = outlier.label,
           no = NA
         )
+      ) %>%
+      dplyr::ungroup(x = .) %>%
+      stats::na.omit(.) %>%
+      dplyr::select(.data = ., -outlier)
+
+    # applying the labels to tagged outliers with ggrepel
+    plot <-
+      plot +
+      ggrepel::geom_label_repel(
+        data = data_outlier_label,
+        mapping = ggplot2::aes(x = x, y = y, label = outlier.label),
+        fontface = "bold",
+        color = outlier.label.color,
+        max.iter = 3e2,
+        box.padding = 0.35,
+        point.padding = 0.5,
+        segment.color = "black",
+        force = 2,
+        na.rm = TRUE,
+        seed = 123
       )
-
-    # converting outlier column to a numeric value that can be attached to
-    data_df$outlier[which(is.na(data_df$outlier))] <- NA
-
-    # if outlier.label is in character format, convert it to factor
-    if (is.character(data_df$outlier.label)) {
-      data_df$outlier.label <- as.factor(data_df$outlier.label)
-    }
-
-    # if outlier labels are words or other types of characters, you want these
-    # characters to be diaplyed and not the values
-    if (is.factor(data_df$outlier.label)) {
-      data_df$outlier.label <- as.character(data_df$outlier.label)
-
-      # convert outlier.label to NAs when outlier is also NA
-      data_df %<>%
-        dplyr::mutate(
-          .data = .,
-          outlier = base::ifelse(
-            test = !is.na(outlier),
-            yes = outlier.label,
-            no = NA
-          )
-        )
-
-      # applying the labels to tagged outliers with ggrepel
-      plot <-
-        plot +
-        ggrepel::geom_label_repel(
-          mapping = ggplot2::aes(label = data_df$outlier),
-          fontface = "bold",
-          color = outlier.label.color,
-          max.iter = 3e2,
-          box.padding = 0.35,
-          point.padding = 0.5,
-          segment.color = "black",
-          force = 2,
-          na.rm = TRUE,
-          seed = 123
-        )
-    } else {
-
-      # if the value for outliers are to be displated, no need to convert
-      # outlier labels to character vector applying the labels to tagged
-      # outliers with ggrepel
-      plot <-
-        plot +
-        ggrepel::geom_label_repel(
-          mapping = ggplot2::aes(label = data_df$outlier),
-          fontface = "bold",
-          color = outlier.label.color,
-          max.iter = 3e2,
-          box.padding = 0.35,
-          point.padding = 0.5,
-          segment.color = "black",
-          force = 2,
-          na.rm = TRUE,
-          seed = 123
-        )
-    }
   }
 
-  # labels with mean values ----------------------------------------------------
+  # mean value tagging ---------------------------------------------------------
 
-  # computing mean and confidence interval for mean
+  # computing mean and confidence interval for mean using helper function
+  # creating label column based on whether just mean is to be displayed or
+  # mean plus its CI
   mean_dat <-
-    groupedstats::grouped_summary(
+    mean_labeller(
       data = data,
-      grouping.vars = x,
-      measures = y
-    ) %>%
-    dplyr::mutate(.data = ., y = mean) %>%
-    dplyr::select(
-      .data = .,
-      x,
-      y,
-      mean.y = mean,
-      lower.ci.y = mean.low.conf,
-      upper.ci.y = mean.high.conf,
-      n
+      x = x,
+      y = y,
+      mean.ci = mean.ci,
+      k = k
     )
 
   # highlight the mean of each group
@@ -557,37 +527,6 @@ ggbetweenstats <- function(data,
         size = mean.size,
         na.rm = TRUE
       )
-
-    # format the numeric values
-    mean_dat %<>%
-      dplyr::mutate_at(
-        .tbl = .,
-        .vars = dplyr::vars(dplyr::contains(".y")),
-        .funs = ~ggstatsplot::specify_decimal_p(x = ., k = k)
-      )
-
-    # adding confidence intervals to the label for mean
-    if (isTRUE(mean.ci)) {
-      mean_dat %<>%
-        purrrlyr::by_row(
-          .d = .,
-          ..f = ~paste(.$mean.y,
-            ", 95% CI [",
-            .$lower.ci.y,
-            ", ",
-            .$upper.ci.y,
-            "]",
-            sep = "",
-            collapse = ""
-          ),
-          .collate = "rows",
-          .to = "label",
-          .labels = TRUE
-        )
-    } else {
-      mean_dat %<>%
-        dplyr::mutate(.data = ., label = mean.y)
-    }
 
     # attach the labels with means to the plot
     plot <- plot +
@@ -613,12 +552,12 @@ ggbetweenstats <- function(data,
   # adding sample size labels to the x axes
   if (isTRUE(sample.size.label)) {
     data_label <- mean_dat %>%
-      dplyr::mutate(.data = ., label = paste0(x, "\n(n = ", n, ")", sep = "")) %>%
+      dplyr::mutate(.data = ., n_label = paste0(x, "\n(n = ", n, ")", sep = "")) %>%
       dplyr::arrange(.data = ., x)
 
     # adding new labels to the plot
     plot <- plot +
-      ggplot2::scale_x_discrete(labels = c(unique(data_label$label)))
+      ggplot2::scale_x_discrete(labels = c(unique(data_label$n_label)))
   }
 
   # messages -------------------------------------------------------------------

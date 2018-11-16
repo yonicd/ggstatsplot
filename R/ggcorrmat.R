@@ -331,7 +331,8 @@ ggcorrmat <-
             r = corr.mat,
             n = n_df$n,
             adjust = p.adjust.method,
-            alpha = 0.05
+            alpha = 0.05,
+            minlength = 20
           )$p
       } else {
         # creating a correlation matrix of p-values
@@ -462,27 +463,17 @@ ggcorrmat <-
               bottom.text = p.adjust.method.text
             )
           )
-
-          # adding text details to the plot
-          plot <- plot +
-            ggplot2::labs(
-              title = title,
-              subtitle = subtitle,
-              caption = caption,
-              xlab = NULL,
-              ylab = NULL
-            )
-        } else {
-          # adding text details to the plot
-          plot <- plot +
-            ggplot2::labs(
-              title = title,
-              subtitle = subtitle,
-              caption = caption,
-              xlab = NULL,
-              ylab = NULL
-            )
         }
+
+        # adding text details to the plot
+        plot <- plot +
+          ggplot2::labs(
+            title = title,
+            subtitle = subtitle,
+            caption = caption,
+            xlab = NULL,
+            ylab = NULL
+          )
 
         # adding ggstatsplot theme for correlation matrix
         if (isTRUE(ggstatsplot.layer)) {
@@ -506,7 +497,7 @@ ggcorrmat <-
           )
       }
     }
-    # ========================================== output ==============================================================
+    # ================================ output ==================================
 
     # return the desired result
     if (output %in% c("correlations", "corr", "r")) {
@@ -540,7 +531,7 @@ ggcorrmat <-
     } else if (output %in% c("p-values", "p.values", "p")) {
 
       # if p-values were adjusted, notify how they are going to be displayed
-      if (p.adjust.method != "none") {
+      if (p.adjust.method != "none" && isTRUE(messages)) {
         base::message(cat(
           crayon::green("Note: "),
           crayon::blue(
@@ -585,7 +576,7 @@ ggcorrmat <-
     } else if (output == "plot") {
 
       # if p-values were adjusted, notify how they are going to be displayed
-      if (p.adjust.method != "none") {
+      if (p.adjust.method != "none" && isTRUE(messages)) {
         base::message(cat(
           crayon::green("Note: "),
           crayon::blue(

@@ -15,11 +15,11 @@ ggbetweenstats(data, x, y, plot.type = "boxviolin",
   linetype = "solid", outlier.tagging = FALSE, outlier.label = NULL,
   outlier.label.color = "black", outlier.color = "black",
   outlier.coef = 1.5, mean.plotting = TRUE, mean.ci = FALSE,
-  mean.size = 5, mean.color = "darkred",
+  mean.size = 5, mean.color = "darkred", point.jitter.width = NULL,
+  point.jitter.height = 0.1, point.dodge.width = 0.6,
   ggtheme = ggplot2::theme_bw(), ggstatsplot.layer = TRUE,
   package = "RColorBrewer", palette = "Dark2", direction = 1,
-  point.jitter.width = NULL, point.jitter.height = 0.1,
-  point.dodge.width = 0.6, messages = TRUE)
+  messages = TRUE)
 }
 \arguments{
 \item{data}{Dataframe from which variables specified are preferentially to be
@@ -45,8 +45,10 @@ argument can be \code{"biased"} (\code{"d"} for Cohen's \emph{d} for \strong{t-t
 omega-squared for \strong{anova})).}
 
 \item{effsize.noncentral}{Logical indicating whether to use non-central
-\emph{t}-distributions for computing the 95% confidence interval for Cohen's \emph{d}
-or Hedge's \emph{g} (Default: \code{FALSE}).}
+\emph{t}-distributions for computing the confidence interval for Cohen's \emph{d}
+or Hedge's \emph{g} (Default: \code{FALSE}).
+@param conf.level Scalar between 0 and 1. If unspecified, the defaults return 95%
+lower and upper confidence intervals (\code{0.95}).}
 
 \item{bf.prior}{A number between 0.5 and 2 (default \code{0.707}), the prior width
 to use in calculating Bayes factors.}
@@ -66,7 +68,8 @@ of \emph{null} hypothesis \strong{for parametric test} (Default: \code{bf.messag
 should be displayed for each level of the grouping variable \code{x} (Default:
 \code{TRUE}).}
 
-\item{k}{Number of digits after decimal point (should be an integer) (Default: \code{k = 3}).}
+\item{k}{Number of digits after decimal point (should be an integer)
+(Default: \code{k = 3}).}
 
 \item{var.equal}{a logical variable indicating whether to treat the
     variances in the samples as equal.  If \code{TRUE}, then a simple F
@@ -129,6 +132,15 @@ is to be displayed (Default: \code{FALSE}).}
 \item{mean.color}{Color for the data point corresponding to mean (Default:
 \code{"darkred"}).}
 
+\item{point.jitter.width}{Numeric specifying the degree of jitter in \code{x}
+direction. Defaults to \code{40\%} of the resolution of the data.}
+
+\item{point.jitter.height}{Numeric specifying the degree of jitter in \code{y}
+direction. Defaults to \code{0.1}.}
+
+\item{point.dodge.width}{Numeric specifying the amount to dodge in the \code{x}
+direction. Defaults to \code{0.60}.}
+
 \item{ggtheme}{A function, \code{ggplot2} theme name. Default value is
 \code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
 extension packages are allowed (e.g., \code{ggthemes::theme_economist()},
@@ -146,15 +158,6 @@ palette. If a number, will index into the list of palettes of appropriate
 type. Default palette is \code{"Dark2"}.}
 
 \item{direction}{Either \code{1} or \code{-1}. If \code{-1} the palette will be reversed.}
-
-\item{point.jitter.width}{Numeric specifying the degree of jitter in \code{x}
-direction. Defaults to \code{40\%} of the resolution of the data.}
-
-\item{point.jitter.height}{Numeric specifying the degree of jitter in \code{y}
-direction. Defaults to \code{0.1}.}
-
-\item{point.dodge.width}{Numeric specifying the amount to dodge in the \code{x}
-direction. Defaults to \code{0.60}.}
 
 \item{messages}{Decides whether messages references, notes, and warnings are
 to be displayed (Default: \code{TRUE}).}
