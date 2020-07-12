@@ -1,13 +1,12 @@
 url: https://indrajeetpatil.github.io/ggstatsplot/
 
 template:
-  ganalytics: "UA-64959413-1"
+  ganalytics: "UA-46037435-2"
   params:
     docsearch:
       api_key: 44345fbe359c5496fbc3955c513333d1
       index_name: ggstatsplot
     bootswatch: lumen
-
 
 development:
   mode: unreleased
@@ -21,32 +20,22 @@ reference:
     desc:  Main functions to use from `ggstatsplot`.
     contents:
       - starts_with("gg")
-      - combine_plots
-      - theme_ggstatsplot
-      - theme_mprl
 
   - title: Grouped variants of primary functions
     desc:  Convenience functions to run the main functions repeatedly across all levels of a single grouping variable.
     contents:
       - starts_with("grouped_")
 
-  - title: Helper functions (statistics subtitles)
-    desc: Functions used to create statistical subtitles that can be used outside of `ggstatsplot` package.
-    contents:
-      - starts_with("subtitle_")
-
   - title: Reexported functions
-    desc:  Some useful functions used internally (from `groupedstats` package).
+    desc:  Useful functions re-exported from other packages.
     contents:
       - specify_decimal_p
-      - signif_column
-      - lm_effsize_ci
-      - set_cwd
 
-  - title: Helper functions (messages)
-    desc:  Simple function to display messages from tests carried out to check statistical assumptions of tests.
+  - title: Graphics helper functions
+    desc: The `ggplot2` themes and other graphics-related helpers in `ggstatsplot`.
     contents:
-      - ends_with("_message")
+      - starts_with("theme_")
+      - starts_with("combine")
 
   - title: Data
     desc:  Datasets included in the package.
@@ -54,5 +43,7 @@ reference:
       - movies_wide
       - movies_long
       - Titanic_full
-      - intent_morality
-
+      - iris_long
+      - VR_dilemma
+      - bugs_wide
+      - bugs_long

@@ -8,23 +8,36 @@
 
 <title>ggstatsplot: 'ggplot2' Based Plots with Statistical Details — ggstatsplot-package • ggstatsplot</title>
 
-<link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
-<link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/lumen/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/lumen/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.1/clipboard.min.js" integrity="sha256-hIvIxeqhGZF+VVeM55k0mJvWpQ6gTkWk3Emc+NmowYA=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -33,28 +46,36 @@
 
 <!-- docsearch -->
 <script src="../docsearch.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.3/docsearch.min.css" integrity="sha256-QOSRU/ra9ActyXkIBbiIB144aDBdtvXBcNc3OTNuX/Q=" crossorigin="anonymous" />
 <link href="../docsearch.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
 
 
   <link href="../extra.css" rel="stylesheet">
   
-<meta property="og:title" content="ggstatsplot: 'ggplot2' Based Plots with Statistical Details — ggstatsplot-package" />
 
+<meta property="og:title" content="ggstatsplot: 'ggplot2' Based Plots with Statistical Details — ggstatsplot-package" />
 <meta property="og:description" content="ggstatsplot is an extension of ggplot2 package for creating
 graphics with details from statistical tests included in the plots
 themselves and targeted primarily at behavioral sciences community to
-provide a one-line code to produce information-rich plots. Currently, it
-supports only the most common types of statistical tests (parametric,
-nonparametric, and robust versions of t-test/anova, correlation, and
-contingency tables analyses)." />
-<meta name="twitter:card" content="summary" />
+provide a one-line code to produce information-rich plots. In a typical
+exploratory data analysis workflow, data visualization and statistical
+modeling are two different phases: visualization informs modeling, and
+modeling in its turn can suggest a different visualization method, and so
+on and so forth. The central idea of ggstatsplot is simple: combine these
+two phases into one in the form of graphics with statistical details, which
+makes data exploration simpler and faster. Currently, it supports only the
+most common types of statistical tests (parametric, non-parametric, Bayes
+Factor, and robust versions of t-test/anova, correlation, regression
+analyses, contingency tables analyses, and meta-analysis)." />
+<meta property="og:image" content="https://indrajeetpatil.github.io/ggstatsplot/logo.png" />
+
 
 
 
 <!-- mathjax -->
-<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
 
 <!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -62,9 +83,10 @@ contingency tables analyses)." />
 <![endif]-->
 
 
+
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -78,7 +100,7 @@ contingency tables analyses)." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggstatsplot</a>
-        <span class="label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.6.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.5.0.9000</span>
       </span>
     </div>
 
@@ -86,7 +108,7 @@ contingency tables analyses)." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -104,34 +126,49 @@ contingency tables analyses)." />
       <a href="../articles/additional.html">additional vignettes</a>
     </li>
     <li>
-      <a href="../articles/ggbetweenstats.html">ggbetweenstats</a>
-    </li>
-    <li>
-      <a href="../articles/ggcoefstats.html">ggcoefstats</a>
-    </li>
-    <li>
-      <a href="../articles/ggcorrmat.html">ggcorrmat</a>
-    </li>
-    <li>
-      <a href="../articles/gghistostats.html">gghistostats</a>
-    </li>
-    <li>
-      <a href="../articles/ggpiestats.html">ggpiestats</a>
-    </li>
-    <li>
-      <a href="../articles/ggscatterstats.html">ggscatterstats</a>
-    </li>
-    <li>
       <a href="../articles/web_only/combine_plots.html">combine_plots</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/effsize_interpretation.html">effect size interpretation</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/faq.html">Frequently asked questions</a>
     </li>
     <li>
       <a href="../articles/web_only/gallery.html">Gallery of ggstatsplot examples</a>
     </li>
     <li>
-      <a href="../articles/web_only/ggstatsplot_paper.html">ggstatsplot: ggplot2 Based Plots with Statistical Details</a>
+      <a href="../articles/web_only/ggbetweenstats.html">ggbetweenstats</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/ggcoefstats.html">ggcoefstats</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/ggcorrmat.html">ggcorrmat</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/ggdotplotstats.html">ggdotplotstats</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/gghistostats.html">gghistostats</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/ggpiestats.html">ggpiestats</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/ggscatterstats.html">ggscatterstats</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/ggwithinstats.html">ggwithinstats</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/other_resources.html">other resources to learn about `ggstatsplot`</a>
     </li>
     <li>
       <a href="../articles/web_only/purrr_examples.html">using `ggstatsplot` with the `purrr` package</a>
+    </li>
+    <li>
+      <a href="../articles/web_only/session_info.html">session information</a>
     </li>
     <li>
       <a href="../articles/web_only/theme_ggstatsplot.html">ggstatsplot theme</a>
@@ -142,17 +179,16 @@ contingency tables analyses)." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/IndrajeetPatil/ggstatsplot">
-    <span class="fa fa-github fa-lg"></span>
+  <a href="https://github.com/IndrajeetPatil/ggstatsplot/">
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
       </ul>
       
-      <form class="navbar-form navbar-right" role="search">
+      <form class="navbar-form navbar-right hidden-xs hidden-sm" role="search">
         <div class="form-group">
           <input type="search" class="form-control" name="search-input" id="search-input" placeholder="Search..." aria-label="Search for..." autocomplete="off">
         </div>
@@ -163,6 +199,7 @@ contingency tables analyses)." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -174,77 +211,76 @@ contingency tables analyses)." />
     </div>
 
     <div class="ref-description">
-    
-    <p>ggstatsplot is an extension of ggplot2 package for creating
+    <p><code>ggstatsplot</code> is an extension of <code>ggplot2</code> package for creating
 graphics with details from statistical tests included in the plots
 themselves and targeted primarily at behavioral sciences community to
-provide a one-line code to produce information-rich plots. Currently, it
-supports only the most common types of statistical tests (parametric,
-nonparametric, and robust versions of t-test/anova, correlation, and
-contingency tables analyses).</p>
-    
+provide a one-line code to produce information-rich plots. In a typical
+exploratory data analysis workflow, data visualization and statistical
+modeling are two different phases: visualization informs modeling, and
+modeling in its turn can suggest a different visualization method, and so
+on and so forth. The central idea of <code>ggstatsplot</code> is simple: combine these
+two phases into one in the form of graphics with statistical details, which
+makes data exploration simpler and faster. Currently, it supports only the
+most common types of statistical tests (parametric, non-parametric, Bayes
+Factor, and robust versions of <em>t</em>-test/anova, correlation, regression
+analyses, contingency tables analyses, and meta-analysis).</p>
     </div>
 
-        
+
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p><code>ggstatsplot</code></p>
 <p>The main functions are-</p><ul>
 <li><p><code><a href='ggbetweenstats.html'>ggbetweenstats</a></code> function to produce
-information-rich comparison plot between different groups or conditions
+information-rich comparison plot <em>between</em> different groups or conditions
 with <code>ggplot2</code> and details from the statistical tests in the subtitle.</p></li>
-<li><p><code><a href='ggscatterstats.html'>ggscatterstats</a></code> function to produce <code>ggplot2</code>
-scatterplots along with a marginal histograms/boxplots/density plots from
-<code>ggExtra</code> and details from the statistical tests in the subtitle.</p></li>
-<li><p><code><a href='ggpiestats.html'>ggpiestats</a></code> function to produce pie chart with
-details from the statistical tests in the subtitle.</p></li>
-<li><p><code><a href='gghistostats.html'>gghistostats</a></code> function to produce histogram for a
-single variable with results from one sample test displayed in the subtitle.</p></li>
-<li><p><code><a href='ggcorrmat.html'>ggcorrmat</a></code> function to visualize
+<li><p><code><a href='ggwithinstats.html'>ggwithinstats</a></code> function to produce
+information-rich comparison plot <em>within</em> different groups or conditions
+with <code>ggplot2</code> and details from the statistical tests in the subtitle.</p></li>
+<li><p><code><a href='ggscatterstats.html'>ggscatterstats</a></code> function to produce
+<code>ggplot2</code> scatterplots along with a marginal histograms/boxplots/density
+plots from <code>ggExtra</code> and details from the statistical tests in the
+subtitle.</p></li>
+<li><p><code><a href='ggpiestats.html'>ggpiestats</a></code> function to produce pie chart
+with details from the statistical tests in the subtitle.</p></li>
+<li><p><code><a href='ggbarstats.html'>ggbarstats</a></code> function to produce stacked bar
+chart with details from the statistical tests in the subtitle.</p></li>
+<li><p><code><a href='gghistostats.html'>gghistostats</a></code> function to produce histogram
+for a single variable with results from one sample test displayed in the
+subtitle.</p></li>
+<li><p><code><a href='ggdotplotstats.html'>ggdotplotstats</a></code> function to produce
+Cleveland-style dot plots/charts for a single variable with labels and
+results from one sample test displayed in the subtitle.</p></li>
+<li><p><code><a href='ggcorrmat.html'>ggcorrmat</a></code> function to visualize the
 correlation matrix.</p></li>
-<li><p><code><a href='combine_plots.html'>combine_plots</a></code> helper
-function to combine multiple <code>ggstatsplot</code> plots using
-<code><a href='http://www.rdocumentation.org/packages/cowplot/topics/plot_grid'>cowplot::plot_grid()</a></code> with a combination of title, caption, and annotation
-label.</p></li>
 <li><p><code><a href='ggcoefstats.html'>ggcoefstats</a></code> function to visualize
 results from regression analyses.</p></li>
-<li><p><code><a href='theme_ggstatsplot.html'>theme_ggstatsplot</a></code> default theme used for this
-package.</p></li>
+<li><p><code><a href='combine_plots2.html'>combine_plots2</a></code> helper function to combine
+multiple <code>ggstatsplot</code> plots using <code><a href='https://rdrr.io/pkg/cowplot/man/plot_grid.html'>cowplot::plot_grid()</a></code> with a
+combination of title, caption, and annotation label.</p></li>
 </ul>
-    <p>For more documentation, see the dedicated
+
+<p>For more documentation, see the dedicated
 <a href='https://indrajeetpatil.github.io/ggstatsplot/'>Website</a>.</p>
-    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Useful links:</p><ul>
 <li><p><a href='https://indrajeetpatil.github.io/ggstatsplot/'>https://indrajeetpatil.github.io/ggstatsplot/</a></p></li>
 <li><p><a href='https://github.com/IndrajeetPatil/ggstatsplot'>https://github.com/IndrajeetPatil/ggstatsplot</a></p></li>
 <li><p>Report bugs at <a href='https://github.com/IndrajeetPatil/ggstatsplot/issues'>https://github.com/IndrajeetPatil/ggstatsplot/issues</a></p></li>
-</ul></div>
-    
-
-  </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      
-      <li><a href="#details">Details</a></li>
-
-      <li><a href="#see-also">See also</a></li>
-          </ul>
-
-    <h2>Author</h2>
-    
-<strong>Maintainer</strong>: Indrajeet Patil <a href='mailto:patilindrajeet.science@gmail.com'>patilindrajeet.science@gmail.com</a> (0000-0003-1995-6531)
-
-Other contributors:
-<ul>
-<li><p>Chuck Powell <a href='mailto:ibecav@gmail.com'>ibecav@gmail.com</a> (0000-0002-3606-2188) [contributor]</p></li>
 </ul>
 
+</div>
 
   </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
+  </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -252,14 +288,14 @@ Other contributors:
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
 </div>
 
       </footer>
    </div>
 
   
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/docsearch.js@2/dist/cdn/docsearch.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docsearch.js/2.6.1/docsearch.min.js" integrity="sha256-GKvGqXDznoRYHCwKXGnuchvKSwmx9SRMrZOTh2g4Sb0=" crossorigin="anonymous"></script>
 <script>
   docsearch({
     
@@ -277,6 +313,8 @@ Other contributors:
 </script>
 
 
+
   </body>
 </html>
+
 

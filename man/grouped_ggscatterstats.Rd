@@ -5,227 +5,198 @@
 \title{Scatterplot with marginal distributions for all levels of a grouping
 variable}
 \usage{
-grouped_ggscatterstats(data, x, y, type = "pearson", bf.prior = 0.707,
-  bf.message = FALSE, label.var = NULL, label.expression = NULL,
-  grouping.var, title.prefix = "Group", xlab = NULL, ylab = NULL,
-  method = "lm", method.args = list(), formula = y ~ x,
-  point.color = "black", point.size = 3, point.alpha = 0.4,
-  line.size = 1.5, point.width.jitter = NULL,
-  point.height.jitter = NULL, line.color = "blue", marginal = TRUE,
-  marginal.type = "histogram", marginal.size = 5, margins = c("both",
-  "x", "y"), package = "wesanderson", palette = "Royal1",
-  direction = 1, xfill = "#009E73", yfill = "#D55E00", xalpha = 1,
-  yalpha = 1, xsize = 0.7, ysize = 0.7, centrality.para = NULL,
-  results.subtitle = TRUE, caption = NULL, subtitle = NULL,
-  nboot = 100, beta = 0.1, k = 3, axes.range.restrict = FALSE,
-  ggtheme = ggplot2::theme_bw(), ggstatsplot.layer = TRUE,
-  messages = TRUE, ...)
+grouped_ggscatterstats(
+  data,
+  x,
+  y,
+  grouping.var,
+  label.var = NULL,
+  label.expression = NULL,
+  title.prefix = NULL,
+  output = "plot",
+  ...,
+  plotgrid.args = list(),
+  title.text = NULL,
+  title.args = list(size = 16, fontface = "bold"),
+  caption.text = NULL,
+  caption.args = list(size = 10),
+  sub.text = NULL,
+  sub.args = list(size = 12)
+)
 }
 \arguments{
-\item{data}{Dataframe from which variables specified are preferentially to be
-taken.}
+\item{data}{for use with \code{formula}, a data frame containing all the
+data}
 
-\item{x}{A vector containing the explanatory variable.}
+\item{x}{The column in \code{data} containing the explanatory variable to be
+plotted on the \code{x}-axis. Can be entered either as a character string (e.g.,
+\code{"x"}) or as a bare expression (e.g, \code{x}).}
 
-\item{y}{The response - a vector of length the number of rows of \code{x}.}
+\item{y}{The column in \code{data} containing the response (outcome) variable to
+be plotted on the \code{y}-axis. Can be entered either as a character string
+(e.g., \code{"y"}) or as a bare expression (e.g, \code{y}).}
 
-\item{type}{Type of association between paired samples required
+\item{grouping.var}{A single grouping variable (can be entered either as a
+bare name \code{x} or as a string \code{"x"}).}
+
+\item{label.var}{Variable to use for points labels. Can be entered either as
+a character string (e.g., \code{"var1"}) or as a bare expression (e.g, \code{var1}).}
+
+\item{label.expression}{An expression evaluating to a logical vector that
+determines the subset of data points to label. This argument can be entered
+either as a character string (e.g., \code{"y < 4 & z < 20"}) or as a bare
+expression (e.g., \code{y < 4 & z < 20}).}
+
+\item{title.prefix}{Character string specifying the prefix text for the fixed
+plot title (name of each factor level) (Default: \code{NULL}). If \code{NULL}, the
+variable name entered for \code{grouping.var} will be used.}
+
+\item{output}{Character that describes what is to be returned: can be
+\code{"plot"} (default) or \code{"subtitle"} or \code{"caption"}. Setting this to
+\code{"subtitle"} will return the expression containing statistical results. If
+you have set \code{results.subtitle = FALSE}, then this will return a \code{NULL}.
+Setting this to \code{"caption"} will return the expression containing details
+about Bayes Factor analysis, but valid only when \code{type = "parametric"} and
+\code{bf.message = TRUE}, otherwise this will return a \code{NULL}. For functions
+\code{ggpiestats} and \code{ggbarstats}, setting \code{output = "proptest"} will return a
+dataframe containing results from proportion tests.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=ggscatterstats]{ggscatterstats}}
+  \describe{
+    \item{\code{point.label.args}}{A list of additional aesthetic arguments to be passed
+to \code{ggrepel::geom_label_repel} geom used to display the labels.}
+    \item{\code{smooth.line.args}}{A list of additional aesthetic arguments to be passed
+to \code{ggplot2::geom_smooth} geom used to display the regression line.}
+    \item{\code{point.args}}{A list of additional aesthetic arguments to be passed
+to \code{ggplot2::geom_point} geom used to display the raw data points.}
+    \item{\code{marginal}}{Decides whether \code{ggExtra::ggMarginal()} plots will be
+displayed; the default is \code{TRUE}.}
+    \item{\code{point.width.jitter}}{Degree of jitter in \code{x} and \code{y}
+direction, respectively. Defaults to \code{0} (0\%) of the resolution of the
+data. Note that the jitter should not be specified in the \code{point.args}
+because this information will be passed to two different \code{geom}s: one
+displaying the points and the other displaying the labels for these points.}
+    \item{\code{point.height.jitter}}{Degree of jitter in \code{x} and \code{y}
+direction, respectively. Defaults to \code{0} (0\%) of the resolution of the
+data. Note that the jitter should not be specified in the \code{point.args}
+because this information will be passed to two different \code{geom}s: one
+displaying the points and the other displaying the labels for these points.}
+    \item{\code{marginal.type}}{Type of marginal distribution to be plotted on the axes
+(\code{"histogram"}, \code{"boxplot"}, \code{"density"}, \code{"violin"}, \code{"densigram"}).}
+    \item{\code{marginal.size}}{Integer describing the relative size of the marginal
+plots compared to the main plot. A size of \code{5} means that the main plot is
+5x wider and 5x taller than the marginal plots.}
+    \item{\code{xfill}}{Character describing color fill for \code{x} and \code{y} axes
+marginal distributions (default: \code{"#009E73"} (for \code{x}) and \code{"#D55E00"} (for
+\code{y})). The same colors will also be used for the lines denoting centrality
+parameters if \code{centrality.parameter} argument is set to \code{TRUE}. Note that
+the defaults are colorblind-friendly.}
+    \item{\code{yfill}}{Character describing color fill for \code{x} and \code{y} axes
+marginal distributions (default: \code{"#009E73"} (for \code{x}) and \code{"#D55E00"} (for
+\code{y})). The same colors will also be used for the lines denoting centrality
+parameters if \code{centrality.parameter} argument is set to \code{TRUE}. Note that
+the defaults are colorblind-friendly.}
+    \item{\code{centrality.parameter}}{Decides \emph{which} measure of central tendency (\code{"mean"}
+or \code{"median"}) is to be displayed as vertical (for \code{x}) and horizontal (for
+\code{y}) lines. Note that mean values corresponds to arithmetic mean and not
+geometric mean.}
+    \item{\code{vline.args}}{A list of additional aesthetic arguments to be
+passed to \code{ggplot2::geom_vline} and \code{ggplot2::geom_hline} geoms used to
+display the centrality parameter labels on vertical and horizontal lines.}
+    \item{\code{hline.args}}{A list of additional aesthetic arguments to be
+passed to \code{ggplot2::geom_vline} and \code{ggplot2::geom_hline} geoms used to
+display the centrality parameter labels on vertical and horizontal lines.}
+    \item{\code{type}}{Type of association between paired samples required
 ("\code{"parametric"}: Pearson's product moment correlation coefficient" or
 "\code{"nonparametric"}: Spearman's rho" or "\code{"robust"}: percentage bend
 correlation coefficient" or "\code{"bayes"}: Bayes Factor for Pearson's \emph{r}").
 Corresponding abbreviations are also accepted: \code{"p"} (for
-parametric/pearson's), \code{"np"} (nonparametric/spearman), \code{"r"} (robust),
+parametric/pearson), \code{"np"} (nonparametric/spearman), \code{"r"} (robust),
 \code{"bf"} (for bayes factor), resp.}
+    \item{\code{conf.level}}{Scalar between 0 and 1. If unspecified, the defaults return
+\verb{95\%} lower and upper confidence intervals (\code{0.95}).}
+    \item{\code{bf.prior}}{A number between \code{0.5} and \code{2} (default \code{0.707}), the prior
+width to use in calculating Bayes factors.}
+    \item{\code{beta}}{bending constant (Default: \code{0.1}). For more, see \code{?WRS2::pbcor}.}
+    \item{\code{k}}{Number of digits after decimal point (should be an integer)
+(Default: \code{k = 2}).}
+    \item{\code{formula}}{Formula to use in smoothing function, eg. \code{y ~ x},
+\code{y ~ poly(x, 2)}, \code{y ~ log(x)}. \code{NULL} by default, in which case
+\code{method = NULL} implies \code{formula = y ~ x} when there are fewer than 1,000
+observations and \code{formula = y ~ s(x, bs = "cs")} otherwise.}
+    \item{\code{method}}{Smoothing method (function) to use, accepts either
+\code{NULL} or a character vector, e.g. \code{"lm"}, \code{"glm"}, \code{"gam"}, \code{"loess"}
+or a function, e.g. \code{MASS::rlm} or \code{mgcv::gam}, \code{stats::lm}, or \code{stats::loess}.
+\code{"auto"} is also accepted for backwards compatibility.  It is equivalent to
+\code{NULL}.
 
-\item{bf.prior}{A number between 0.5 and 2 (default \code{0.707}), the prior width
-to use in calculating Bayes factors.}
-
-\item{bf.message}{Logical. Decides whether to display Bayes Factor in favor
-of \emph{null} hypothesis \strong{for parametric test} (Default: \code{bf.message = FALSE}).}
-
-\item{label.var}{Variable to use for points labels. \strong{Must} be entered as a
-character string e.g. \code{"y"}}
-
-\item{label.expression}{An expression evaluating to a logical vector that
-determines the subset of data points to label. \strong{Must} be entered as a
-character string e.g. \code{"y < 4 & z < 20"}.}
-
-\item{grouping.var}{Grouping variable.}
-
-\item{title.prefix}{Character specifying the prefix text for the fixed plot
-title (name of each factor level) (Default: \code{"Group"}).}
-
-\item{xlab}{Label for \code{x} axis variable.}
-
-\item{ylab}{Label for \code{y} axis variable.}
-
-\item{method}{Smoothing method (function) to use, accepts either a character vector,
-e.g. \code{"auto"}, \code{"lm"}, \code{"glm"}, \code{"gam"}, \code{"loess"} or a function, e.g.
-\code{MASS::rlm} or \code{mgcv::gam}, \code{base::lm}, or \code{base::loess}.
-
-For \code{method = "auto"} the smoothing method is chosen based on the
-size of the largest group (across all panels). \code{\link[=loess]{loess()}} is
+For \code{method = NULL} the smoothing method is chosen based on the
+size of the largest group (across all panels). \code{\link[stats:loess]{stats::loess()}} is
 used for less than 1,000 observations; otherwise \code{\link[mgcv:gam]{mgcv::gam()}} is
-used with \code{formula = y ~ s(x, bs = "cs")}. Somewhat anecdotally,
+used with \code{formula = y ~ s(x, bs = "cs")} with \code{method = "REML"}. Somewhat anecdotally,
 \code{loess} gives a better appearance, but is \eqn{O(N^{2})}{O(N^2)} in memory,
 so does not work for larger datasets.
 
 If you have fewer than 1,000 observations but want to use the same \code{gam()}
-model that \code{method = "auto"} would use, then set
-\code{method = "gam", formula = y ~ s(x, bs = "cs")}.}
-
-\item{method.args}{List of additional arguments passed on to the modelling
+model that \code{method = NULL} would use, then set
+\verb{method = "gam", formula = y ~ s(x, bs = "cs")}.}
+    \item{\code{method.args}}{List of additional arguments passed on to the modelling
 function defined by \code{method}.}
-
-\item{formula}{Formula to use in smoothing function, eg. \code{y ~ x},
-\code{y ~ poly(x, 2)}, \code{y ~ log(x)}}
-
-\item{point.color}{Aesthetics specifying geom point
-(defaults: \code{point.color = "black"}, \code{point.size = 3},\code{point.alpha = 0.4}).}
-
-\item{point.size}{Aesthetics specifying geom point
-(defaults: \code{point.color = "black"}, \code{point.size = 3},\code{point.alpha = 0.4}).}
-
-\item{point.alpha}{Aesthetics specifying geom point
-(defaults: \code{point.color = "black"}, \code{point.size = 3},\code{point.alpha = 0.4}).}
-
-\item{line.size}{Size for the regression line.}
-
-\item{point.width.jitter}{Degree of jitter in \code{x} direction. Defaults to 40\%
-of the resolution of the data.}
-
-\item{point.height.jitter}{Degree of jitter in \code{y} direction. Defaults to
-40\% of the resolution of the data.}
-
-\item{line.color}{color for the regression line.}
-
-\item{marginal}{Decides whether \code{ggExtra::ggMarginal()} plots will be
-displayed; the default is \code{TRUE}.}
-
-\item{marginal.type}{Type of marginal distribution to be plotted on the axes
-(\code{"histogram"}, \code{"boxplot"}, \code{"density"}, \code{"violin"}, \code{"densigram"}).}
-
-\item{marginal.size}{Integer describing the relative size of the marginal
-plots compared to the main plot. A size of \code{5} means that the main plot is
-5x wider and 5x taller than the marginal plots.}
-
-\item{margins}{Character describing along which margins to show the plots.
-Any of the following arguments are accepted: \code{"both"}, \code{"x"}, \code{"y"}.}
-
-\item{package}{Name of package from which the palette is desired as string
-or symbol.}
-
-\item{palette}{Name of palette as string or symbol.}
-
-\item{direction}{Either \code{1} or \code{-1}. If \code{-1} the palette will be reversed.}
-
-\item{xfill}{Character describing color fill for \code{x} and \code{y} axes
-marginal distributions (default: \code{"#009E73"} (for \code{x}) and \code{"#D55E00"} (for
-\code{y})). If set to \code{NULL}, manual specification of colors will be turned off
-and 2 colors from the specified \code{palette} from \code{package} will be selected.}
-
-\item{yfill}{Character describing color fill for \code{x} and \code{y} axes
-marginal distributions (default: \code{"#009E73"} (for \code{x}) and \code{"#D55E00"} (for
-\code{y})). If set to \code{NULL}, manual specification of colors will be turned off
-and 2 colors from the specified \code{palette} from \code{package} will be selected.}
-
-\item{xalpha}{Numeric deciding transparency levels for the marginal
-distributions. Any numbers from \code{0} (transparent) to \code{1} (opaque). The
-default is \code{1} for both axes.}
-
-\item{yalpha}{Numeric deciding transparency levels for the marginal
-distributions. Any numbers from \code{0} (transparent) to \code{1} (opaque). The
-default is \code{1} for both axes.}
-
-\item{xsize}{Size for the marginal distribution boundaries (Default:
-\code{0.7}).}
-
-\item{ysize}{Size for the marginal distribution boundaries (Default:
-\code{0.7}).}
-
-\item{centrality.para}{Decides \emph{which} measure of central tendency (\code{"mean"}
-or \code{"median"}) is to be displayed as vertical (for \code{x}) and horizontal (for
-\code{y}) lines.}
-
-\item{results.subtitle}{Decides whether the results of statistical tests are
-to be displayed as subtitle.}
-
-\item{caption}{The text for the plot caption.}
-
-\item{subtitle}{The text for the plot subtitle. Will work only if
-\code{results.subtitle = FALSE}.}
-
-\item{nboot}{Number of bootstrap samples for computing effect size (Default:
-\code{100}).}
-
-\item{beta}{bending constant (Default: \code{0.1}). For more, see \code{?WRS2::pbcor}.}
-
-\item{k}{Number of decimal places expected for results.}
-
-\item{axes.range.restrict}{Logical decides whether to restrict the axes
-values ranges to min and max values of the \code{x} and \code{y} variables (Default:
-\code{FALSE}).}
-
-\item{ggtheme}{A function, \code{ggplot2} theme name. Default value is
+    \item{\code{ggtheme}}{A function, \code{ggplot2} theme name. Default value is
 \code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
-extension packages are allowed (e.g., \code{ggthemes::theme_economist()},
-\code{hrbrthemes::theme_ipsum_ps()}, \code{ggthemes::theme_fivethirtyeight()}, etc.).}
-
-\item{ggstatsplot.layer}{Logical that decides whether \code{theme_ggstatsplot}
+extension packages are allowed (e.g., \code{ggthemes::theme_fivethirtyeight()},
+\code{hrbrthemes::theme_ipsum_ps()}, etc.).}
+    \item{\code{ggstatsplot.layer}}{Logical that decides whether \code{theme_ggstatsplot}
 theme elements are to be displayed along with the selected \code{ggtheme}
-(Default: \code{TRUE}).}
+(Default: \code{TRUE}). \code{theme_ggstatsplot} is an opinionated theme layer that
+override some aspects of the selected \code{ggtheme}.}
+    \item{\code{bf.message}}{Logical that decides whether to display Bayes Factor in
+favor of the \emph{null} hypothesis. This argument is relevant only \strong{for
+parametric test} (Default: \code{TRUE}).}
+    \item{\code{results.subtitle}}{Decides whether the results of statistical tests are
+to be displayed as a subtitle (Default: \code{TRUE}). If set to \code{FALSE}, only
+the plot will be returned.}
+    \item{\code{xlab}}{Labels for \code{x} and \code{y} axis variables. If \code{NULL} (default),
+variable names for \code{x} and \code{y} will be used.}
+    \item{\code{ylab}}{Labels for \code{x} and \code{y} axis variables. If \code{NULL} (default),
+variable names for \code{x} and \code{y} will be used.}
+    \item{\code{subtitle}}{The text for the plot subtitle. Will work only if
+\code{results.subtitle = FALSE}.}
+    \item{\code{caption}}{The text for the plot caption.}
+    \item{\code{ggplot.component}}{A \code{ggplot} component to be added to the plot prepared
+by \code{ggstatsplot}. This argument is primarily helpful for \code{grouped_} variant
+of the current function. Default is \code{NULL}. The argument should be entered
+as a function.}
+    \item{\code{margins}}{Along which margins to show the plots. One of: [both, x, y].}
+    \item{\code{xparams}}{List of extra parameters to use only for the marginal plot along
+the x axis.}
+    \item{\code{yparams}}{List of extra parameters to use only for the marginal plot along
+the y axis.}
+    \item{\code{centrality.label.args}}{A list of additional
+aesthetic arguments to be passed to the \code{geom_label} used to display the
+label corresponding to the centrality parameter and test value.}
+  }}
 
-\item{messages}{Decides whether messages references, notes, and warnings are
-to be displayed (Default: \code{TRUE}).}
+\item{plotgrid.args}{A list of additional arguments to \code{cowplot::plot_grid}.}
 
-\item{...}{Arguments passed on to \code{combine_plots}
-\describe{
-  \item{title.text}{String or plotmath expression to be drawn as title for the
+\item{title.text}{String or plotmath expression to be drawn as title for the
 \emph{combined plot}.}
-  \item{title.color}{Text color for title.}
-  \item{title.size}{Point size of title text.}
-  \item{title.vjust}{Vertical justification for title. Default = \code{0.5} (centered
-on y). \code{0} = baseline at y, 1 = ascender at y.}
-  \item{title.hjust}{Horizontal justification for title. Default = \code{0.5}
-(centered on x). \code{0} = flush-left at x, \code{1} = flush-right.}
-  \item{title.fontface}{The font face (\code{"plain"}, \code{"bold"} (default), \code{"italic"},
-\code{"bold.italic"}) for title.}
-  \item{caption.text}{String or plotmath expression to be drawn as the caption
+
+\item{title.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
+
+\item{caption.text}{String or plotmath expression to be drawn as the caption
 for the \emph{combined plot}.}
-  \item{caption.color}{Text color for caption.}
-  \item{caption.size}{Point size of title text.}
-  \item{caption.vjust}{Vertical justification for caption. Default = \code{0.5}
-(centered on y). \code{0} = baseline at y, \code{1} = ascender at y.}
-  \item{caption.hjust}{Horizontal justification for caption. Default = \code{0.5}
-(centered on x). \code{0} = flush-left at x, \code{1} = flush-right.}
-  \item{caption.fontface}{The font face (\code{"plain"} (default), \code{"bold"}, \code{"italic"},
-\code{"bold.italic"}) for caption.}
-  \item{sub.text}{The label with which the \emph{combined plot} should be annotated.
+
+\item{caption.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
+
+\item{sub.text}{The label with which the \emph{combined plot} should be annotated.
 Can be a plotmath expression.}
-  \item{sub.color}{Text color for annotation label (Default: \code{"black"}).}
-  \item{sub.size}{Point size of annotation text (Default: \code{12}).}
-  \item{sub.x}{The x position of annotation label (Default: \code{0.5}).}
-  \item{sub.y}{The y position of annotation label (Default: \code{0.5}).}
-  \item{sub.hjust}{Horizontal justification for annotation label (Default:
-\code{0.5}).}
-  \item{sub.vjust}{Vertical justification for annotation label (Default:
-\code{0.5}).}
-  \item{sub.vpadding}{Vertical padding. The total vertical space added to the
-label, given in grid units. By default, this is added equally above and
-below the label. However, by changing the y and vjust parameters, this can
-be changed (Default: \code{grid::unit(1, "lines")}).}
-  \item{sub.fontface}{The font face (\code{"plain"} (default), \code{"bold"}, \code{"italic"},
-\code{"bold.italic"}) for the annotation label.}
-  \item{sub.angle}{Angle at which annotation label is to be drawn (Default:
-\code{0}).}
-  \item{sub.lineheight}{Line height of annotation label.}
-  \item{title.caption.rel.heights}{Numerical vector of relative columns heights
-while combining (title, plot, caption).}
-  \item{title.rel.heights}{Numerical vector of relative columns heights while
-combining (title, plot).}
-  \item{caption.rel.heights}{Numerical vector of relative columns heights while
-combining (plot, caption).}
-}}
+
+\item{sub.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
 }
 \description{
 Grouped scatterplots from \code{ggplot2} combined with marginal
@@ -233,17 +204,14 @@ histograms/boxplots/density plots with statistical details added as a
 subtitle.
 }
 \examples{
-
+\donttest{
 # to ensure reproducibility
 set.seed(123)
+library(ggstatsplot)
 
 # basic function call
 ggstatsplot::grouped_ggscatterstats(
-  data = dplyr::filter(
-    ggstatsplot::movies_long,
-    genre == "Comedy" |
-      genre == "Drama"
-  ),
+  data = dplyr::filter(movies_long, genre == "Comedy" | genre == "Drama"),
   x = length,
   y = rating,
   method = "lm",
@@ -252,47 +220,43 @@ ggstatsplot::grouped_ggscatterstats(
 )
 
 # using labeling
-ggstatsplot::grouped_ggscatterstats(
+# (also show how to modify basic plot from within function call)
+grouped_ggscatterstats(
   data = dplyr::filter(ggplot2::mpg, cyl != 5),
   x = displ,
   y = hwy,
   grouping.var = cyl,
   title.prefix = "Cylinder count",
   type = "robust",
-  label.var = "manufacturer",
-  label.expression = "hwy > 25 & displ > 2.5",
-  xfill = NULL,
-  package = "yarrr",
-  palette = "appletv",
+  label.var = manufacturer,
+  label.expression = hwy > 25 & displ > 2.5,
+  ggplot.component = ggplot2::scale_y_continuous(sec.axis = ggplot2::dup_axis()),
   messages = FALSE
 )
 
 # labeling without expression
-\dontrun{
+
 ggstatsplot::grouped_ggscatterstats(
   data = dplyr::filter(
-    .data = ggstatsplot::movies_long,
-    rating == 8,
+    .data = movies_long,
+    rating == 7,
     genre \%in\% c("Drama", "Comedy")
   ),
   x = budget,
   y = length,
   grouping.var = genre,
-  bf.message = TRUE,
+  bf.message = FALSE,
   label.var = "title",
   marginal = FALSE,
   title.prefix = "Genre",
-  caption.text = "All movies have IMDB rating greater than 8."
+  caption.text = "All movies have IMDB rating equal to 7."
 )
 }
 }
 \references{
-\url{https://cran.r-project.org/package=ggstatsplot/vignettes/ggscatterstats.html}
+\url{https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/ggscatterstats.html}
 }
 \seealso{
 \code{\link{ggscatterstats}}, \code{\link{ggcorrmat}},
 \code{\link{grouped_ggcorrmat}}
-}
-\author{
-Indrajeet Patil
 }

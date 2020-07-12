@@ -2,23 +2,79 @@
 % Please edit documentation in R/combine_plots.R
 \name{combine_plots}
 \alias{combine_plots}
-\title{Combining multiple plots using \code{cowplot::plot_grid()} with a
-combination of title, caption, and annotation label}
+\title{Combining and arranging multiple plots in a grid}
 \usage{
-combine_plots(..., title.text = NULL, title.color = "black",
-  title.size = 16, title.vjust = 0.5, title.hjust = 0.5,
-  title.fontface = "bold", caption.text = NULL,
-  caption.color = "black", caption.size = 10, caption.vjust = 0.5,
-  caption.hjust = 0.5, caption.fontface = "plain", sub.text = NULL,
-  sub.color = "black", sub.size = 12, sub.vjust = 0.5,
-  sub.hjust = 0.5, sub.fontface = "plain", sub.x = 0.5,
-  sub.y = 0.5, sub.vpadding = grid::unit(1, "lines"), sub.angle = 0,
-  sub.lineheight = 0.9, title.rel.heights = c(0.1, 1.2),
-  caption.rel.heights = c(1.2, 0.1), title.caption.rel.heights = c(0.1,
-  1.2, 0.1))
+combine_plots(
+  ...,
+  title.text = NULL,
+  title.color = "black",
+  title.size = 16,
+  title.vjust = 0.5,
+  title.hjust = 0.5,
+  title.fontface = "bold",
+  caption.text = NULL,
+  caption.color = "black",
+  caption.size = 10,
+  caption.vjust = 0.5,
+  caption.hjust = 0.5,
+  caption.fontface = "plain",
+  sub.text = NULL,
+  sub.color = "black",
+  sub.size = 12,
+  sub.vjust = 0.5,
+  sub.hjust = 0.5,
+  sub.fontface = "plain",
+  sub.x = 0.5,
+  sub.y = 0.5,
+  sub.vpadding = ggplot2::unit(1, "lines"),
+  sub.angle = 0,
+  sub.lineheight = 0.9,
+  title.rel.heights = c(0.1, 1.2),
+  caption.rel.heights = c(1.2, 0.1),
+  title.caption.rel.heights = c(0.1, 1.2, 0.1)
+)
 }
 \arguments{
-\item{...}{Additional arguments used in the function \code{cowplot::plot_grid()}.}
+\item{...}{
+  Arguments passed on to \code{\link[cowplot:plot_grid]{cowplot::plot_grid}}
+  \describe{
+    \item{\code{plotlist}}{(optional) List of plots to display. Alternatively, the plots can be provided
+individually as the first n arguments of the function plot_grid (see examples).}
+    \item{\code{align}}{(optional) Specifies whether graphs in the grid should be horizontally ("h") or
+vertically ("v") aligned. Options are "none" (default), "hv" (align in both directions), "h", and "v".}
+    \item{\code{axis}}{(optional) Specifies whether graphs should be aligned by the left ("l"), right ("r"), top ("t"), or bottom ("b")
+margins. Options are "none" (default), or a string of any combination of l, r, t, and b in any order (e.g. "tblr" or "rlbt" for aligning all margins).
+Must be specified if any of the graphs are complex (e.g. faceted) and alignment is specified and desired. See \code{\link[cowplot:align_plots]{align_plots()}} for details.}
+    \item{\code{nrow}}{(optional) Number of rows in the plot grid.}
+    \item{\code{ncol}}{(optional) Number of columns in the plot grid.}
+    \item{\code{rel_widths}}{(optional) Numerical vector of relative columns widths. For example, in a two-column
+grid, \code{rel_widths = c(2, 1)} would make the first column twice as wide as the
+second column.}
+    \item{\code{rel_heights}}{(optional) Numerical vector of relative rows heights. Works just as
+\code{rel_widths} does, but for rows rather than columns.}
+    \item{\code{labels}}{(optional) List of labels to be added to the plots. You can also set \code{labels="AUTO"} to
+auto-generate upper-case labels or \code{labels="auto"} to auto-generate lower-case labels.}
+    \item{\code{label_size}}{(optional) Numerical value indicating the label size. Default is 14.}
+    \item{\code{label_fontfamily}}{(optional) Font family of the plot labels. If not provided, is taken from the current theme.}
+    \item{\code{label_fontface}}{(optional) Font face of the plot labels. Default is "bold".}
+    \item{\code{label_colour}}{(optional) Color of the plot labels. If not provided, is taken from the current theme.}
+    \item{\code{label_x}}{(optional) Single value or vector of x positions for plot labels, relative to each subplot.
+Defaults to 0 for all labels. (Each label is placed all the way to the left of each plot.)}
+    \item{\code{label_y}}{(optional) Single value or vector of y positions for plot labels, relative to each subplot.
+Defaults to 1 for all labels. (Each label is placed all the way to the top of each plot.)}
+    \item{\code{hjust}}{Adjusts the horizontal position of each label. More negative values move the label further
+to the right on the plot canvas. Can be a single value (applied to all labels) or a vector of values
+(one for each label). Default is -0.5.}
+    \item{\code{vjust}}{Adjusts the vertical position of each label. More positive values move the label further
+down on the plot canvas. Can be a single value (applied to all labels) or a vector of values
+(one for each label). Default is 1.5.}
+    \item{\code{scale}}{Individual number or vector of numbers greater than 0. Enables you to scale the size of all or
+select plots. Usually it's preferable to set margins instead of using \code{scale}, but \code{scale} can
+sometimes be more powerful.}
+    \item{\code{greedy}}{(optional) How should margins be adjusted during alignment. See \code{\link[cowplot:align_plots]{align_plots()}} for details.}
+    \item{\code{cols}}{Deprecated. Use \code{ncol}.}
+    \item{\code{rows}}{Deprecated. Use \code{nrow}.}
+  }}
 
 \item{title.text}{String or plotmath expression to be drawn as title for the
 \emph{combined plot}.}
@@ -27,14 +83,14 @@ combine_plots(..., title.text = NULL, title.color = "black",
 
 \item{title.size}{Point size of title text.}
 
-\item{title.vjust}{Vertical justification for title. Default = \code{0.5} (centered
-on y). \code{0} = baseline at y, 1 = ascender at y.}
+\item{title.vjust}{Vertical justification for title. Default = \code{0.5}
+(centered on \code{y}). \code{0} = baseline at \code{y}, \code{1} = ascender at \code{y}.}
 
 \item{title.hjust}{Horizontal justification for title. Default = \code{0.5}
-(centered on x). \code{0} = flush-left at x, \code{1} = flush-right.}
+(centered on \code{x}). \code{0} = flush-left at x, \code{1} = flush-right.}
 
-\item{title.fontface}{The font face (\code{"plain"}, \code{"bold"} (default), \code{"italic"},
-\code{"bold.italic"}) for title.}
+\item{title.fontface}{The font face (\code{"plain"}, \code{"bold"} (default),
+\code{"italic"}, \code{"bold.italic"}) for title.}
 
 \item{caption.text}{String or plotmath expression to be drawn as the caption
 for the \emph{combined plot}.}
@@ -49,8 +105,8 @@ for the \emph{combined plot}.}
 \item{caption.hjust}{Horizontal justification for caption. Default = \code{0.5}
 (centered on x). \code{0} = flush-left at x, \code{1} = flush-right.}
 
-\item{caption.fontface}{The font face (\code{"plain"} (default), \code{"bold"}, \code{"italic"},
-\code{"bold.italic"}) for caption.}
+\item{caption.fontface}{The font face (\code{"plain"} (default), \code{"bold"},
+\code{"italic"}, \code{"bold.italic"}) for caption.}
 
 \item{sub.text}{The label with which the \emph{combined plot} should be annotated.
 Can be a plotmath expression.}
@@ -75,7 +131,7 @@ Can be a plotmath expression.}
 \item{sub.vpadding}{Vertical padding. The total vertical space added to the
 label, given in grid units. By default, this is added equally above and
 below the label. However, by changing the y and vjust parameters, this can
-be changed (Default: \code{grid::unit(1, "lines")}).}
+be changed (Default: \code{ggplot2::unit(1, "lines")}).}
 
 \item{sub.angle}{Angle at which annotation label is to be drawn (Default:
 \code{0}).}
@@ -99,7 +155,6 @@ Wrapper around \code{\link[cowplot]{plot_grid}} that will return
 a plotgrid along with a combination of title, caption, and annotation label
 }
 \examples{
-
 # loading the necessary libraries
 library(ggplot2)
 
@@ -133,8 +188,5 @@ combine_plots(
 )
 }
 \references{
-\url{https://cran.r-project.org/package=ggstatsplot/vignettes/combine_plots.html}
-}
-\author{
-Indrajeet Patil
+\url{https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/combine_plots.html}
 }

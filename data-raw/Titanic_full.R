@@ -8,7 +8,7 @@ library(purrr)
 dplyr::glimpse(x = Titanic)
 
 # converting to tibble
-tibble::as_data_frame(x = Titanic)
+tibble::as_tibble(x = Titanic)
 
 # a custom function to repeat dataframe `rep` number of times, which is going to
 # be count data for us
@@ -17,41 +17,42 @@ rep_df <- function(df, rep) {
 }
 
 # converting dataframe to full length based on count information
-Titanic_full <- tibble::as_data_frame(datasets::Titanic) %>%
-  tibble::rowid_to_column(df = ., var = "id") %>%
+Titanic_full <-
+  tibble::as_tibble(x = datasets::Titanic) %>%
+  tibble::rowid_to_column(., var = "id") %>%
   dplyr::mutate_at(
     .tbl = .,
     .vars = dplyr::vars("id"),
-    .funs = ~as.factor(.)
+    .funs = ~ as.factor(.)
   ) %>%
-  base::split(x = ., f = .$id) %>%
-  purrr::map_dfr(.x = ., .f = ~rep_df(df = ., rep = .$n)) %>%
+  split(x = ., f = .$id) %>%
+  purrr::map_dfr(.x = ., .f = ~ rep_df(df = ., rep = .$n)) %>%
   dplyr::mutate_at(
     .tbl = .,
     .vars = dplyr::vars("id"),
-    .funs = ~as.numeric(as.character(.))
+    .funs = ~ as.numeric(as.character(.))
   ) %>%
   dplyr::mutate_if(
     .tbl = .,
     .predicate = is.character,
-    .funs = ~base::as.factor(.)
+    .funs = ~ as.factor(.)
   ) %>%
   dplyr::mutate_if(
     .tbl = .,
     .predicate = is.factor,
-    .funs = ~base::droplevels(.)
+    .funs = ~ droplevels(.)
   ) %>%
   dplyr::select(.data = ., -n, -id) %>%
-  tibble::rownames_to_column(df = ., var = "id") %>%
+  tibble::rownames_to_column(.data = ., var = "id") %>%
   dplyr::mutate_at(
     .tbl = .,
     .vars = "id",
-    .funs = ~as.numeric(as.character(.))
+    .funs = ~ as.numeric(as.character(.))
   )
 
 # reordering the Class variables
 Titanic_full$Class <-
-  base::factor(
+  factor(
     x = Titanic_full$Class,
     levels = c("1st", "2nd", "3rd", "Crew", ordered = TRUE)
   )
@@ -61,4 +62,4 @@ dplyr::glimpse(Titanic_full)
 
 # saving the files
 readr::write_csv(x = Titanic_full, path = "data-raw/Titanic_full.csv")
-base::save(Titanic_full, file = "data/Titanic_full.rdata")
+save(Titanic_full, file = "data/Titanic_full.rdata")

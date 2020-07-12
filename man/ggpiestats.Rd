@@ -4,125 +4,187 @@
 \alias{ggpiestats}
 \title{Pie charts with statistical tests}
 \usage{
-ggpiestats(data, main, condition = NULL, counts = NULL, ratio = NULL,
-  paired = FALSE, factor.levels = NULL, stat.title = NULL,
-  sample.size.label = TRUE, title = NULL, caption = NULL,
-  nboot = 25, legend.title = NULL, facet.wrap.name = NULL, k = 3,
-  perc.k = 0, facet.proptest = TRUE, ggtheme = ggplot2::theme_bw(),
-  ggstatsplot.layer = TRUE, package = "RColorBrewer",
-  palette = "Dark2", direction = 1, messages = TRUE)
+ggpiestats(
+  data,
+  main,
+  condition = NULL,
+  counts = NULL,
+  ratio = NULL,
+  paired = FALSE,
+  results.subtitle = TRUE,
+  label = "percentage",
+  perc.k = 0,
+  label.args = list(alpha = 1, fill = "white"),
+  bf.message = TRUE,
+  sampling.plan = "indepMulti",
+  fixed.margin = "rows",
+  prior.concentration = 1,
+  title = NULL,
+  subtitle = NULL,
+  caption = NULL,
+  conf.level = 0.95,
+  nboot = 100L,
+  legend.title = NULL,
+  k = 2L,
+  proportion.test = TRUE,
+  ggtheme = ggplot2::theme_bw(),
+  ggstatsplot.layer = TRUE,
+  package = "RColorBrewer",
+  palette = "Dark2",
+  ggplot.component = NULL,
+  output = "plot",
+  x = NULL,
+  y = NULL,
+  ...
+)
 }
 \arguments{
-\item{data}{The data as a data frame (matrix or tables will not be accepted).}
-
-\item{main}{The variable to use as the \strong{rows} in the
-contingency table.}
-
-\item{condition}{The variable to use as the \strong{columns} in the contingency
-table.}
+\item{data}{A dataframe (or a tibble) from which variables specified are to
+be taken. A matrix or tables will \strong{not} be accepted.}
 
 \item{counts}{A string naming a variable in data containing counts, or \code{NULL}
 if each row represents a single observation (Default).}
 
-\item{ratio}{A vector of numbers: the expected proportions for the proportion
-test. Default is \code{NULL}, which means if there are two levels \code{ratio = c(1,1)}, etc.}
+\item{ratio}{A vector of proportions: the expected proportions for the
+proportion test (should sum to 1). Default is \code{NULL}, which means the null
+is equal theoretical proportions across the levels of the nominal variable.
+This means if there are two levels this will be \code{ratio = c(0.5,0.5)} or if
+there are four levels this will be \code{ratio = c(0.25,0.25,0.25,0.25)}, etc.}
 
-\item{paired}{Logical indicating whether data came from a within-subjects
-design study (Default: \code{FALSE}). If \code{TRUE}, McNemar test subtitle will be
-returned. If \code{FALSE}, Pearson's chi-square test will be returned.}
+\item{paired}{Logical indicating whether data came from a within-subjects or
+repeated measures design study (Default: \code{FALSE}). If \code{TRUE}, McNemar's
+test subtitle will be returned. If \code{FALSE}, Pearson's chi-square test will
+be returned.}
 
-\item{factor.levels}{A character vector with labels for factor levels of
-\code{main} variable.}
+\item{results.subtitle}{Decides whether the results of statistical tests are
+to be displayed as a subtitle (Default: \code{TRUE}). If set to \code{FALSE}, only
+the plot will be returned.}
 
-\item{stat.title}{Title for the effect being investigated with the chi-square
-test. The default is \code{NULL}, i.e. no title will be added to describe the
-effect being shown. An example of a \code{stat.title} argument will be something
-like \code{"main x condition"} or \code{"interaction"}.}
-
-\item{sample.size.label}{Logical that decides whether sample size information
-should be displayed for each level of the grouping variable \code{condition} (Default:
-\code{TRUE}).}
-
-\item{title}{The text for the plot title.}
-
-\item{caption}{The text for the plot caption.}
-
-\item{nboot}{Number of bootstrap samples for computing effect size (Default:
-\code{25}).}
-
-\item{legend.title}{Title text for the legend.}
-
-\item{facet.wrap.name}{The text for the facet_wrap variable label.}
-
-\item{k}{Number of digits after decimal point (should be an integer)
-(Default: \code{k = 3}).}
+\item{label}{Character decides what information needs to be displayed
+on the label in each pie slice. Possible options are \code{"percentage"}
+(default), \code{"counts"}, \code{"both"}.}
 
 \item{perc.k}{Numeric that decides number of decimal places for percentage
 labels (Default: \code{0}).}
 
-\item{facet.proptest}{Decides whether proportion test for \code{main} variable is
+\item{label.args}{Additional aesthetic arguments that will be passed to
+\code{geom_label}.}
+
+\item{bf.message}{Logical that decides whether to display Bayes Factor in
+favor of the \emph{null} hypothesis. This argument is relevant only \strong{for
+parametric test} (Default: \code{TRUE}).}
+
+\item{sampling.plan}{Character describing the sampling plan. Possible options
+are \code{"indepMulti"} (independent multinomial; default), \code{"poisson"},
+\code{"jointMulti"} (joint multinomial), \code{"hypergeom"} (hypergeometric). For
+more, see \code{?BayesFactor::contingencyTableBF()}.}
+
+\item{fixed.margin}{For the independent multinomial sampling plan, which
+margin is fixed (\code{"rows"} or \code{"cols"}). Defaults to \code{"rows"}.}
+
+\item{prior.concentration}{Specifies the prior concentration parameter, set
+to \code{1} by default. It indexes the expected deviation from the null
+hypothesis under the alternative, and corresponds to Gunel and Dickey's
+(1974) \code{"a"} parameter.}
+
+\item{title}{The text for the plot title.}
+
+\item{subtitle}{The text for the plot subtitle. Will work only if
+\code{results.subtitle = FALSE}.}
+
+\item{caption}{The text for the plot caption.}
+
+\item{conf.level}{Scalar between 0 and 1. If unspecified, the defaults return
+\verb{95\%} lower and upper confidence intervals (\code{0.95}).}
+
+\item{nboot}{Number of bootstrap samples for computing confidence interval
+for the effect size (Default: \code{100}).}
+
+\item{legend.title}{Title text for the legend.}
+
+\item{k}{Number of digits after decimal point (should be an integer)
+(Default: \code{k = 2}).}
+
+\item{proportion.test}{Decides whether proportion test for \code{main} variable is
 to be carried out for each level of \code{condition} (Default: \code{TRUE}).}
 
 \item{ggtheme}{A function, \code{ggplot2} theme name. Default value is
 \code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
-extension packages are allowed (e.g., \code{ggthemes::theme_economist()},
-\code{hrbrthemes::theme_ipsum_ps()}, \code{ggthemes::theme_fivethirtyeight()}, etc.).}
+extension packages are allowed (e.g., \code{ggthemes::theme_fivethirtyeight()},
+\code{hrbrthemes::theme_ipsum_ps()}, etc.).}
 
 \item{ggstatsplot.layer}{Logical that decides whether \code{theme_ggstatsplot}
 theme elements are to be displayed along with the selected \code{ggtheme}
-(Default: \code{TRUE}).}
+(Default: \code{TRUE}). \code{theme_ggstatsplot} is an opinionated theme layer that
+override some aspects of the selected \code{ggtheme}.}
 
 \item{package}{Name of package from which the palette is desired as string
 or symbol.}
 
-\item{palette}{If a character string (e.g., \code{"Set1"}), will use that named
-palette. If a number, will index into the list of palettes of appropriate
-type. Default palette is \code{"Dark2"}.}
+\item{palette}{Name of palette as string or symbol.}
 
-\item{direction}{Either \code{1} or \code{-1}. If \code{-1} the palette will be reversed.}
+\item{ggplot.component}{A \code{ggplot} component to be added to the plot prepared
+by \code{ggstatsplot}. This argument is primarily helpful for \code{grouped_} variant
+of the current function. Default is \code{NULL}. The argument should be entered
+as a function.}
 
-\item{messages}{Decides whether messages references, notes, and warnings are
-to be displayed (Default: \code{TRUE}).}
+\item{output}{Character that describes what is to be returned: can be
+\code{"plot"} (default) or \code{"subtitle"} or \code{"caption"}. Setting this to
+\code{"subtitle"} will return the expression containing statistical results. If
+you have set \code{results.subtitle = FALSE}, then this will return a \code{NULL}.
+Setting this to \code{"caption"} will return the expression containing details
+about Bayes Factor analysis, but valid only when \code{type = "parametric"} and
+\code{bf.message = TRUE}, otherwise this will return a \code{NULL}. For functions
+\code{ggpiestats} and \code{ggbarstats}, setting \code{output = "proptest"} will return a
+dataframe containing results from proportion tests.}
+
+\item{x, main}{The variable to use as the \strong{rows} in the contingency table.}
+
+\item{y, condition}{The variable to use as the \strong{columns} in the contingency
+table. Default is \code{NULL}. If \code{NULL}, one-sample proportion test (a goodness
+of fit test) will be run for the \code{x} variable. Otherwise an appropriate
+association test will be run. This argument can not be \code{NULL} for
+\code{ggbarstats} function.}
+
+\item{...}{Currently ignored.}
+}
+\value{
+Unlike a number of statistical softwares, \code{ggstatsplot} doesn't
+provide the option for Yates' correction for the Pearson's chi-squared
+statistic. This is due to compelling amount of Monte-Carlo simulation
+research which suggests that the Yates' correction is overly conservative,
+even in small sample sizes. As such it is recommended that it should not
+ever be applied in practice (Camilli & Hopkins, 1978, 1979; Feinberg, 1980;
+Larntz, 1978; Thompson, 1988).
+
+For more about how the effect size measures and their confidence intervals
+are computed, see \code{?rcompanion::cohenG}, \code{?rcompanion::cramerV}, and
+\code{?rcompanion::cramerVFit}.
 }
 \description{
 Pie charts for categorical data with statistical details
 included in the plot as a subtitle.
 }
 \examples{
-
 # for reproducibility
 set.seed(123)
 
-# simple function call with the defaults (without condition)
-ggstatsplot::ggpiestats(
-  data = ggplot2::msleep,
-  main = vore,
-  perc.k = 1,
-  k = 2
-)
+# one sample goodness of fit proportion test
+ggstatsplot::ggpiestats(ggplot2::msleep, vore)
 
-# simple function call with the defaults (with condition)
+# association test (or contingency table analysis)
 ggstatsplot::ggpiestats(
-  data = datasets::mtcars,
-  main = vs,
-  condition = cyl,
+  data = mtcars,
+  x = vs,
+  y = cyl,
   nboot = 10,
-  factor.levels = c("0 = V-shaped", "1 = straight"),
   legend.title = "Engine"
-)
-
-# simple function call with the defaults (without condition; with count data)
-library(jmv)
-
-ggstatsplot::ggpiestats(
-  data = as.data.frame(HairEyeColor),
-  main = Eye,
-  counts = Freq
 )
 }
 \references{
-\url{https://cran.r-project.org/package=ggstatsplot/vignettes/ggpiestats.html}
+\url{https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/ggpiestats.html}
 }
-\author{
-Indrajeet Patil
+\seealso{
+\code{\link{grouped_ggpiestats}}, \code{\link{ggbarstats}},
+\code{\link{grouped_ggbarstats}}
 }

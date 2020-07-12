@@ -4,152 +4,188 @@
 \alias{gghistostats}
 \title{Histogram for distribution of a numeric variable}
 \usage{
-gghistostats(data = NULL, x, binwidth = NULL, bar.measure = "count",
-  xlab = NULL, title = NULL, subtitle = NULL, caption = NULL,
-  type = "parametric", test.value = 0, bf.prior = 0.707,
-  bf.message = FALSE, robust.estimator = "onestep", nboot = 100,
-  k = 3, ggtheme = ggplot2::theme_bw(), ggstatsplot.layer = TRUE,
-  fill.gradient = FALSE, low.color = "#0072B2",
-  high.color = "#D55E00", bar.fill = "grey50",
-  results.subtitle = TRUE, centrality.para = "mean",
-  centrality.color = "blue", centrality.size = 1,
-  centrality.linetype = "dashed", centrality.line.labeller = TRUE,
-  centrality.k = 2, test.value.line = FALSE,
-  test.value.color = "black", test.value.size = 1,
-  test.value.linetype = "dashed", test.line.labeller = TRUE,
-  test.k = 0, messages = TRUE)
+gghistostats(
+  data,
+  x,
+  binwidth = NULL,
+  bar.measure = "count",
+  xlab = NULL,
+  title = NULL,
+  subtitle = NULL,
+  caption = NULL,
+  type = "parametric",
+  test.value = 0,
+  bf.prior = 0.707,
+  bf.message = TRUE,
+  effsize.type = "g",
+  conf.level = 0.95,
+  nboot = 100,
+  k = 2L,
+  ggtheme = ggplot2::theme_bw(),
+  ggstatsplot.layer = TRUE,
+  bar.fill = "grey50",
+  results.subtitle = TRUE,
+  test.k = 0,
+  test.value.line = FALSE,
+  test.value.line.args = list(size = 1),
+  test.value.label.args = list(size = 3),
+  centrality.parameter = "mean",
+  centrality.k = 2,
+  centrality.line.args = list(size = 1, color = "blue"),
+  centrality.label.args = list(color = "blue", size = 3),
+  normal.curve = FALSE,
+  normal.curve.args = list(size = 3),
+  ggplot.component = NULL,
+  output = "plot",
+  ...
+)
 }
 \arguments{
-\item{data}{Dataframe from which variables specified are preferentially to be
-taken. This argument is optional.}
+\item{data}{A dataframe (or a tibble) from which variables specified are to
+be taken. A matrix or tables will \strong{not} be accepted.}
 
-\item{x}{A numeric variable.}
+\item{x}{A numeric variable from the dataframe \code{data}.}
 
-\item{binwidth}{The width of the histogram bins. Can be specified as a numeric
-value, or a function that calculates width from \code{x}. The default is to use the
-\code{max(x) - min(x) / sqrt(N)}. You should always check this value and explore
-multiple widths to find the best to illustrate the stories in your data.}
+\item{binwidth}{The width of the histogram bins. Can be specified as a
+numeric value, or a function that calculates width from \code{x}. The default is
+to use the \code{max(x) - min(x) / sqrt(N)}. You should always check this value
+and explore multiple widths to find the best to illustrate the stories in
+your data.}
 
 \item{bar.measure}{Character describing what value needs to be represented as
 height in the bar chart. This can either be \code{"count"}, which shows number
 of points in bin, or \code{"density"}, which density of points in bin, scaled to
 integrate to 1, or "\code{proportion}", which shows relative frequencies of
-observations in each bin, or "\code{mix}", which shows both count and proportion
-in the same plot (only available from \code{ggplot2 3.0.1} onward).}
+observations in each bin, or "\code{mix}", which shows \emph{both} count and
+proportion in the same plot.}
 
-\item{xlab}{Label for \code{x} axis variable.}
+\item{xlab}{Labels for \code{x} and \code{y} axis variables. If \code{NULL} (default),
+variable names for \code{x} and \code{y} will be used.}
 
 \item{title}{The text for the plot title.}
 
-\item{subtitle}{The text for the plot subtitle \emph{if} you don't want results
-from one sample test to be displayed (i.e. \code{results.subtitle} should be set
-to \code{FALSE}).}
+\item{subtitle}{The text for the plot subtitle. Will work only if
+\code{results.subtitle = FALSE}.}
 
 \item{caption}{The text for the plot caption.}
 
 \item{type}{Type of statistic expected (\code{"parametric"} or \code{"nonparametric"}
-or \code{"robust"} or \code{"bayes"}). Abbreviations accepted are \code{"p"} or \code{"np"} or
-\code{"r"} or \code{"bf"}, respectively.}
+or \code{"robust"} or \code{"bayes"}).Corresponding abbreviations are also accepted:
+\code{"p"} (for parametric), \code{"np"} (nonparametric), \code{"r"} (robust), or
+\code{"bf"}resp.}
 
 \item{test.value}{A number specifying the value of the null hypothesis
 (Default: \code{0}).}
 
-\item{bf.prior}{A number between 0.5 and 2 (default \code{0.707}), the prior width
-to use in calculating Bayes factors.}
+\item{bf.prior}{A number between \code{0.5} and \code{2} (default \code{0.707}), the prior
+width to use in calculating Bayes factors.}
 
-\item{bf.message}{Logical. Decides whether to display Bayes Factor in favor
-of \emph{null} hypothesis \strong{for parametric test} (Default: \code{bf.message = FALSE}).
-This will work only if \code{results.subtitle = TRUE}.}
+\item{bf.message}{Logical that decides whether to display Bayes Factor in
+favor of the \emph{null} hypothesis. This argument is relevant only \strong{for
+parametric test} (Default: \code{TRUE}).}
 
-\item{robust.estimator}{If \code{test = "robust"} robust estimator to be used
-(\code{"onestep"} (Default), \code{"mom"}, or \code{"median"}). For more, see
-\code{?WRS2::onesampb}.}
+\item{effsize.type}{Type of effect size needed for \emph{parametric} tests. The
+argument can be \code{"d"} (for Cohen's \emph{d}) or \code{"g"} (for Hedge's \emph{g}).}
 
-\item{nboot}{Number of bootstrap samples for robust one-sample location test
-(Default: \code{100}).}
+\item{conf.level}{Scalar between 0 and 1. If unspecified, the defaults return
+\verb{95\%} lower and upper confidence intervals (\code{0.95}).}
+
+\item{nboot}{Number of bootstrap samples for computing confidence interval
+for the effect size (Default: \code{100}).}
 
 \item{k}{Number of digits after decimal point (should be an integer)
-(Default: \code{k = 3}).}
+(Default: \code{k = 2}).}
 
 \item{ggtheme}{A function, \code{ggplot2} theme name. Default value is
 \code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
-extension packages are allowed (e.g., \code{ggthemes::theme_economist()},
-\code{hrbrthemes::theme_ipsum_ps()}, \code{ggthemes::theme_fivethirtyeight()}, etc.).}
+extension packages are allowed (e.g., \code{ggthemes::theme_fivethirtyeight()},
+\code{hrbrthemes::theme_ipsum_ps()}, etc.).}
 
 \item{ggstatsplot.layer}{Logical that decides whether \code{theme_ggstatsplot}
 theme elements are to be displayed along with the selected \code{ggtheme}
-(Default: \code{TRUE}).}
+(Default: \code{TRUE}). \code{theme_ggstatsplot} is an opinionated theme layer that
+override some aspects of the selected \code{ggtheme}.}
 
-\item{fill.gradient}{Logical decides whether color fill gradient is to be
-displayed (Default: \code{FALSE}). If \code{FALSE}, the legend and the color gradient
-will also be removed. The default is set to \code{FALSE} because the gradient
-provides redundant information in light of y-axis labels.}
-
-\item{low.color, high.color}{Colors for low and high ends of the gradient.
-Defaults are colorblind-friendly.}
-
-\item{bar.fill}{If \code{fill.gradient = FALSE}, then \code{bar.fill} decides which
-color will uniformly fill all the bars in the histogram (Default: \code{"grey50"}).}
+\item{bar.fill}{Character input that decides which color will uniformly fill
+all the bars in the histogram (Default: \code{"grey50"}).}
 
 \item{results.subtitle}{Decides whether the results of statistical tests are
-to be displayed as subtitle (Default: \code{results.subtitle = TRUE}). If set to
-\code{FALSE}, no statistical tests will be run.}
+to be displayed as a subtitle (Default: \code{TRUE}). If set to \code{FALSE}, only
+the plot will be returned.}
 
-\item{centrality.para}{Decides \emph{which} measure of central tendency (\code{"mean"}
-or \code{"median"}) is to be displayed as a vertical line.}
+\item{test.k}{Integer denoting the number of decimal places expected for
+\code{test.value} label. (Default: \code{0} ).}
 
-\item{centrality.color}{Decides color for the vertical line for centrality
-parameter (Default: \code{"blue"}).}
+\item{test.value.line}{Logical that decides whether a line corresponding to
+the \code{test.value} should be superimposed on the plot.}
 
-\item{centrality.size}{Decides size for the vertical line for centrality
-parameter (Default: \code{1.2}).}
+\item{test.value.line.args}{A list of additional
+aesthetic arguments to be passed to the \code{geom_line} used to display the
+lines corresponding to the centrality parameter and test value.}
 
-\item{centrality.linetype}{Decides linetype for the vertical line for
-centrality parameter (Default: \code{"dashed"}).}
+\item{test.value.label.args}{A list of additional
+aesthetic arguments to be passed to the \code{geom_label} used to display the
+label corresponding to the centrality parameter and test value.}
 
-\item{test.value.line}{Decides whether test value is to be displayed as a
-vertical line (Default: \code{FALSE}).}
+\item{centrality.parameter}{Decides \emph{which} measure of central tendency
+(\code{"mean"} or \code{"median"}) is to be displayed as a vertical line. To not show
+any parameter, set this to \code{"none"}.}
 
-\item{test.value.color}{Decides color for the vertical line denoting test
-value (Default: \code{"black"}).}
+\item{centrality.k}{Integer denoting the number of decimal places expected
+for centrality parameter label. (Default: \code{2}).}
 
-\item{test.value.size}{Decides size for the vertical line for test value
-(Default: \code{1.2}).}
+\item{centrality.line.args}{A list of additional
+aesthetic arguments to be passed to the \code{geom_line} used to display the
+lines corresponding to the centrality parameter and test value.}
 
-\item{test.value.linetype}{Decides linetype for the vertical line for test
-value (Default: \code{"dashed"}).}
+\item{centrality.label.args}{A list of additional
+aesthetic arguments to be passed to the \code{geom_label} used to display the
+label corresponding to the centrality parameter and test value.}
 
-\item{test.line.labeller, centrality.line.labeller}{A logical that decides
-whether line labels should be displayed (Default: \code{TRUE}).}
+\item{normal.curve}{A logical value that decides whether to super-impose a
+normal curve using \code{stats::dnorm(mean(x), sd(x))}. Default is \code{FALSE}.}
 
-\item{test.k, centrality.k}{Integer denoting the number of decimal places
-expected for test and centrality parameters. (Default: \code{0} and \code{2},
-respectively).}
+\item{normal.curve.args}{A list of additional aesthetic arguments to be
+passed to the normal curve.}
 
-\item{messages}{Decides whether messages references, notes, and warnings are
-to be displayed (Default: \code{TRUE}).}
+\item{ggplot.component}{A \code{ggplot} component to be added to the plot prepared
+by \code{ggstatsplot}. This argument is primarily helpful for \code{grouped_} variant
+of the current function. Default is \code{NULL}. The argument should be entered
+as a function.}
+
+\item{output}{Character that describes what is to be returned: can be
+\code{"plot"} (default) or \code{"subtitle"} or \code{"caption"}. Setting this to
+\code{"subtitle"} will return the expression containing statistical results. If
+you have set \code{results.subtitle = FALSE}, then this will return a \code{NULL}.
+Setting this to \code{"caption"} will return the expression containing details
+about Bayes Factor analysis, but valid only when \code{type = "parametric"} and
+\code{bf.message = TRUE}, otherwise this will return a \code{NULL}. For functions
+\code{ggpiestats} and \code{ggbarstats}, setting \code{output = "proptest"} will return a
+dataframe containing results from proportion tests.}
+
+\item{...}{Currently ignored.}
 }
 \description{
 Histogram with statistical details from one-sample test included
 in the plot as a subtitle.
 }
 \examples{
-
+\donttest{
 # most basic function call with the defaults
-# this is the only function where data argument can be `NULL`.
+# this is the **only** function where data argument can be `NULL`
 ggstatsplot::gghistostats(
-  x = ToothGrowth$len,
+  data = ToothGrowth,
+  x = len,
   xlab = "Tooth length",
-  centrality.para = "median"
+  centrality.parameter = "median"
 )
 
 # a detailed function call
 ggstatsplot::gghistostats(
-  data = datasets::iris,
+  data = iris,
   x = Sepal.Length,
-  bar.measure = "count",
+  bar.measure = "mix",
   type = "p",
-  bf.message = TRUE,
   caption = substitute(paste(italic("Note"), ": Iris dataset by Fisher.")),
   bf.prior = 0.8,
   test.value = 3,
@@ -158,12 +194,11 @@ ggstatsplot::gghistostats(
   bar.fill = "grey50"
 )
 }
+}
 \references{
-\url{https://cran.r-project.org/package=ggstatsplot/vignettes/gghistostats.html}
+\url{https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/gghistostats.html}
 }
 \seealso{
-\code{\link{grouped_gghistostats}}
-}
-\author{
-Indrajeet Patil
+\code{\link{grouped_gghistostats}}, \code{\link{ggdotplotstats}},
+\code{\link{grouped_ggdotplotstats}}
 }

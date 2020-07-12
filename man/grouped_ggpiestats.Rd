@@ -4,138 +4,162 @@
 \alias{grouped_ggpiestats}
 \title{Grouped pie charts with statistical tests}
 \usage{
-grouped_ggpiestats(data, main, condition = NULL, counts = NULL,
-  grouping.var, title.prefix = "Group", ratio = NULL, paired = FALSE,
-  factor.levels = NULL, stat.title = NULL, sample.size.label = TRUE,
-  caption = NULL, nboot = 25, legend.title = NULL,
-  facet.wrap.name = NULL, k = 3, perc.k = 0, facet.proptest = TRUE,
-  ggtheme = ggplot2::theme_bw(), ggstatsplot.layer = TRUE,
-  package = "RColorBrewer", palette = "Dark2", direction = 1,
-  messages = TRUE, ...)
+grouped_ggpiestats(
+  data,
+  main,
+  condition = NULL,
+  counts = NULL,
+  grouping.var,
+  title.prefix = NULL,
+  output = "plot",
+  x = NULL,
+  y = NULL,
+  ...,
+  plotgrid.args = list(),
+  title.text = NULL,
+  title.args = list(size = 16, fontface = "bold"),
+  caption.text = NULL,
+  caption.args = list(size = 10),
+  sub.text = NULL,
+  sub.args = list(size = 12)
+)
 }
 \arguments{
-\item{data}{The data as a data frame (matrix or tables will not be accepted).}
+\item{data}{A dataframe (or a tibble) from which variables specified are to
+be taken. A matrix or tables will \strong{not} be accepted.}
 
-\item{main}{The variable to use as the \strong{rows} in the
-contingency table.}
+\item{main}{The variable to use as the \strong{rows} in the contingency table.}
 
 \item{condition}{The variable to use as the \strong{columns} in the contingency
-table.}
+table. Default is \code{NULL}. If \code{NULL}, one-sample proportion test (a goodness
+of fit test) will be run for the \code{x} variable. Otherwise an appropriate
+association test will be run. This argument can not be \code{NULL} for
+\code{ggbarstats} function.}
 
 \item{counts}{A string naming a variable in data containing counts, or \code{NULL}
 if each row represents a single observation (Default).}
 
-\item{grouping.var}{Grouping variable.}
+\item{grouping.var}{A single grouping variable (can be entered either as a
+bare name \code{x} or as a string \code{"x"}).}
 
-\item{title.prefix}{Character specifying the prefix text for the fixed plot
-title (name of each factor level) (Default: \code{"Group"}).}
+\item{title.prefix}{Character string specifying the prefix text for the fixed
+plot title (name of each factor level) (Default: \code{NULL}). If \code{NULL}, the
+variable name entered for \code{grouping.var} will be used.}
 
-\item{ratio}{A vector of numbers: the expected proportions for the proportion
-test. Default is \code{NULL}, which means if there are two levels \code{ratio = c(1,1)}, etc.}
+\item{output}{Character that describes what is to be returned: can be
+\code{"plot"} (default) or \code{"subtitle"} or \code{"caption"}. Setting this to
+\code{"subtitle"} will return the expression containing statistical results. If
+you have set \code{results.subtitle = FALSE}, then this will return a \code{NULL}.
+Setting this to \code{"caption"} will return the expression containing details
+about Bayes Factor analysis, but valid only when \code{type = "parametric"} and
+\code{bf.message = TRUE}, otherwise this will return a \code{NULL}. For functions
+\code{ggpiestats} and \code{ggbarstats}, setting \code{output = "proptest"} will return a
+dataframe containing results from proportion tests.}
 
-\item{paired}{Logical indicating whether data came from a within-subjects
-design study (Default: \code{FALSE}). If \code{TRUE}, McNemar test subtitle will be
-returned. If \code{FALSE}, Pearson's chi-square test will be returned.}
+\item{x}{The variable to use as the \strong{rows} in the contingency table.}
 
-\item{factor.levels}{A character vector with labels for factor levels of
-\code{main} variable.}
+\item{y}{The variable to use as the \strong{columns} in the contingency
+table. Default is \code{NULL}. If \code{NULL}, one-sample proportion test (a goodness
+of fit test) will be run for the \code{x} variable. Otherwise an appropriate
+association test will be run. This argument can not be \code{NULL} for
+\code{ggbarstats} function.}
 
-\item{stat.title}{Title for the effect being investigated with the chi-square
-test. The default is \code{NULL}, i.e. no title will be added to describe the
-effect being shown. An example of a \code{stat.title} argument will be something
-like \code{"main x condition"} or \code{"interaction"}.}
-
-\item{sample.size.label}{Logical that decides whether sample size information
-should be displayed for each level of the grouping variable \code{condition} (Default:
-\code{TRUE}).}
-
-\item{caption}{The text for the plot caption.}
-
-\item{nboot}{Number of bootstrap samples for computing effect size (Default:
-\code{25}).}
-
-\item{legend.title}{Title text for the legend.}
-
-\item{facet.wrap.name}{The text for the facet_wrap variable label.}
-
-\item{k}{Number of digits after decimal point (should be an integer)
-(Default: \code{k = 3}).}
-
-\item{perc.k}{Numeric that decides number of decimal places for percentage
-labels (Default: \code{0}).}
-
-\item{facet.proptest}{Decides whether proportion test for \code{main} variable is
+\item{...}{
+  Arguments passed on to \code{\link[=ggpiestats]{ggpiestats}}
+  \describe{
+    \item{\code{proportion.test}}{Decides whether proportion test for \code{main} variable is
 to be carried out for each level of \code{condition} (Default: \code{TRUE}).}
-
-\item{ggtheme}{A function, \code{ggplot2} theme name. Default value is
+    \item{\code{perc.k}}{Numeric that decides number of decimal places for percentage
+labels (Default: \code{0}).}
+    \item{\code{label}}{Character decides what information needs to be displayed
+on the label in each pie slice. Possible options are \code{"percentage"}
+(default), \code{"counts"}, \code{"both"}.}
+    \item{\code{label.args}}{Additional aesthetic arguments that will be passed to
+\code{geom_label}.}
+    \item{\code{legend.title}}{Title text for the legend.}
+    \item{\code{results.subtitle}}{Decides whether the results of statistical tests are
+to be displayed as a subtitle (Default: \code{TRUE}). If set to \code{FALSE}, only
+the plot will be returned.}
+    \item{\code{bf.message}}{Logical that decides whether to display Bayes Factor in
+favor of the \emph{null} hypothesis. This argument is relevant only \strong{for
+parametric test} (Default: \code{TRUE}).}
+    \item{\code{subtitle}}{The text for the plot subtitle. Will work only if
+\code{results.subtitle = FALSE}.}
+    \item{\code{caption}}{The text for the plot caption.}
+    \item{\code{conf.level}}{Scalar between 0 and 1. If unspecified, the defaults return
+\verb{95\%} lower and upper confidence intervals (\code{0.95}).}
+    \item{\code{nboot}}{Number of bootstrap samples for computing confidence interval
+for the effect size (Default: \code{100}).}
+    \item{\code{k}}{Number of digits after decimal point (should be an integer)
+(Default: \code{k = 2}).}
+    \item{\code{ggtheme}}{A function, \code{ggplot2} theme name. Default value is
 \code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
-extension packages are allowed (e.g., \code{ggthemes::theme_economist()},
-\code{hrbrthemes::theme_ipsum_ps()}, \code{ggthemes::theme_fivethirtyeight()}, etc.).}
-
-\item{ggstatsplot.layer}{Logical that decides whether \code{theme_ggstatsplot}
+extension packages are allowed (e.g., \code{ggthemes::theme_fivethirtyeight()},
+\code{hrbrthemes::theme_ipsum_ps()}, etc.).}
+    \item{\code{ggstatsplot.layer}}{Logical that decides whether \code{theme_ggstatsplot}
 theme elements are to be displayed along with the selected \code{ggtheme}
-(Default: \code{TRUE}).}
-
-\item{package}{Name of package from which the palette is desired as string
+(Default: \code{TRUE}). \code{theme_ggstatsplot} is an opinionated theme layer that
+override some aspects of the selected \code{ggtheme}.}
+    \item{\code{package}}{Name of package from which the palette is desired as string
 or symbol.}
+    \item{\code{palette}}{Name of palette as string or symbol.}
+    \item{\code{ggplot.component}}{A \code{ggplot} component to be added to the plot prepared
+by \code{ggstatsplot}. This argument is primarily helpful for \code{grouped_} variant
+of the current function. Default is \code{NULL}. The argument should be entered
+as a function.}
+    \item{\code{ratio}}{A vector of proportions: the expected proportions for the
+proportion test (should sum to 1). Default is \code{NULL}, which means the null
+is equal theoretical proportions across the levels of the nominal variable.
+This means if there are two levels this will be \code{ratio = c(0.5,0.5)} or if
+there are four levels this will be \code{ratio = c(0.25,0.25,0.25,0.25)}, etc.}
+    \item{\code{sampling.plan}}{Character describing the sampling plan. Possible options
+are \code{"indepMulti"} (independent multinomial; default), \code{"poisson"},
+\code{"jointMulti"} (joint multinomial), \code{"hypergeom"} (hypergeometric). For
+more, see \code{?BayesFactor::contingencyTableBF()}.}
+    \item{\code{fixed.margin}}{For the independent multinomial sampling plan, which
+margin is fixed (\code{"rows"} or \code{"cols"}). Defaults to \code{"rows"}.}
+    \item{\code{prior.concentration}}{Specifies the prior concentration parameter, set
+to \code{1} by default. It indexes the expected deviation from the null
+hypothesis under the alternative, and corresponds to Gunel and Dickey's
+(1974) \code{"a"} parameter.}
+    \item{\code{paired}}{Logical indicating whether data came from a within-subjects or
+repeated measures design study (Default: \code{FALSE}). If \code{TRUE}, McNemar's
+test subtitle will be returned. If \code{FALSE}, Pearson's chi-square test will
+be returned.}
+  }}
 
-\item{palette}{If a character string (e.g., \code{"Set1"}), will use that named
-palette. If a number, will index into the list of palettes of appropriate
-type. Default palette is \code{"Dark2"}.}
+\item{plotgrid.args}{A list of additional arguments to \code{cowplot::plot_grid}.}
 
-\item{direction}{Either \code{1} or \code{-1}. If \code{-1} the palette will be reversed.}
-
-\item{messages}{Decides whether messages references, notes, and warnings are
-to be displayed (Default: \code{TRUE}).}
-
-\item{...}{Arguments passed on to \code{combine_plots}
-\describe{
-  \item{title.text}{String or plotmath expression to be drawn as title for the
+\item{title.text}{String or plotmath expression to be drawn as title for the
 \emph{combined plot}.}
-  \item{title.color}{Text color for title.}
-  \item{title.size}{Point size of title text.}
-  \item{title.vjust}{Vertical justification for title. Default = \code{0.5} (centered
-on y). \code{0} = baseline at y, 1 = ascender at y.}
-  \item{title.hjust}{Horizontal justification for title. Default = \code{0.5}
-(centered on x). \code{0} = flush-left at x, \code{1} = flush-right.}
-  \item{title.fontface}{The font face (\code{"plain"}, \code{"bold"} (default), \code{"italic"},
-\code{"bold.italic"}) for title.}
-  \item{caption.text}{String or plotmath expression to be drawn as the caption
+
+\item{title.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
+
+\item{caption.text}{String or plotmath expression to be drawn as the caption
 for the \emph{combined plot}.}
-  \item{caption.color}{Text color for caption.}
-  \item{caption.size}{Point size of title text.}
-  \item{caption.vjust}{Vertical justification for caption. Default = \code{0.5}
-(centered on y). \code{0} = baseline at y, \code{1} = ascender at y.}
-  \item{caption.hjust}{Horizontal justification for caption. Default = \code{0.5}
-(centered on x). \code{0} = flush-left at x, \code{1} = flush-right.}
-  \item{caption.fontface}{The font face (\code{"plain"} (default), \code{"bold"}, \code{"italic"},
-\code{"bold.italic"}) for caption.}
-  \item{sub.text}{The label with which the \emph{combined plot} should be annotated.
+
+\item{caption.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
+
+\item{sub.text}{The label with which the \emph{combined plot} should be annotated.
 Can be a plotmath expression.}
-  \item{sub.color}{Text color for annotation label (Default: \code{"black"}).}
-  \item{sub.size}{Point size of annotation text (Default: \code{12}).}
-  \item{sub.x}{The x position of annotation label (Default: \code{0.5}).}
-  \item{sub.y}{The y position of annotation label (Default: \code{0.5}).}
-  \item{sub.hjust}{Horizontal justification for annotation label (Default:
-\code{0.5}).}
-  \item{sub.vjust}{Vertical justification for annotation label (Default:
-\code{0.5}).}
-  \item{sub.vpadding}{Vertical padding. The total vertical space added to the
-label, given in grid units. By default, this is added equally above and
-below the label. However, by changing the y and vjust parameters, this can
-be changed (Default: \code{grid::unit(1, "lines")}).}
-  \item{sub.fontface}{The font face (\code{"plain"} (default), \code{"bold"}, \code{"italic"},
-\code{"bold.italic"}) for the annotation label.}
-  \item{sub.angle}{Angle at which annotation label is to be drawn (Default:
-\code{0}).}
-  \item{sub.lineheight}{Line height of annotation label.}
-  \item{title.caption.rel.heights}{Numerical vector of relative columns heights
-while combining (title, plot, caption).}
-  \item{title.rel.heights}{Numerical vector of relative columns heights while
-combining (title, plot).}
-  \item{caption.rel.heights}{Numerical vector of relative columns heights while
-combining (plot, caption).}
-}}
+
+\item{sub.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
+}
+\value{
+Unlike a number of statistical softwares, \code{ggstatsplot} doesn't
+provide the option for Yates' correction for the Pearson's chi-squared
+statistic. This is due to compelling amount of Monte-Carlo simulation
+research which suggests that the Yates' correction is overly conservative,
+even in small sample sizes. As such it is recommended that it should not
+ever be applied in practice (Camilli & Hopkins, 1978, 1979; Feinberg, 1980;
+Larntz, 1978; Thompson, 1988).
+
+For more about how the effect size measures and their confidence intervals
+are computed, see \code{?rcompanion::cohenG}, \code{?rcompanion::cramerV}, and
+\code{?rcompanion::cramerVFit}.
 }
 \description{
 Helper function for \code{ggstatsplot::ggpiestats} to apply this
@@ -143,30 +167,43 @@ function across multiple levels of a given factor and combining the
 resulting plots using \code{ggstatsplot::combine_plots}.
 }
 \examples{
-
+\donttest{
 # grouped one-sample proportion tests
 ggstatsplot::grouped_ggpiestats(
   data = mtcars,
   grouping.var = am,
-  main = cyl
+  x = cyl
 )
 
-# without condition and with count data
-library(jmv)
+# the following will take slightly more amount of time
+# for reproducibility
+set.seed(123)
 
+# let's create a smaller dataframe
+diamonds_short <- ggplot2::diamonds \%>\%
+  dplyr::filter(.data = ., cut \%in\% c("Fair", "Very Good", "Ideal")) \%>\%
+  dplyr::sample_frac(tbl = ., size = 0.10)
+
+# plot
 ggstatsplot::grouped_ggpiestats(
-  data = as.data.frame(HairEyeColor),
-  main = Hair,
-  counts = Freq,
-  grouping.var = Sex
+  data = diamonds_short,
+  x = color,
+  y = clarity,
+  grouping.var = cut,
+  nboot = 20,
+  sampling.plan = "poisson",
+  title.prefix = "Quality",
+  slice.label = "both",
+  messages = FALSE,
+  perc.k = 1,
+  plotgrid.args = list(nrow = 3)
 )
+}
 }
 \references{
-\url{https://cran.r-project.org/package=ggstatsplot/vignettes/ggpiestats.html}
+\url{https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/ggpiestats.html}
 }
 \seealso{
-\code{\link{ggpiestats}}
-}
-\author{
-Indrajeet Patil
+\code{\link{ggbarstats}}, \code{\link{ggpiestats}},
+\code{\link{grouped_ggbarstats}}
 }

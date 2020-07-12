@@ -1,0 +1,219 @@
+---
+title: "Frequently asked questions"
+author: "Indrajeet Patil"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    fig.align: 'center'
+    fig.asp: 0.618
+    dpi: 300
+    toc: true
+    warning: FALSE
+    message: FALSE
+vignette: >
+  %\VignetteIndexEntry{Frequently asked questions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  dpi = 300,
+  out.width = "100%",
+  collapse = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  comment = "#>"
+)
+```
+
+# FAQ
+
+Here are some of the common questions that have been asked in GitHub issues and
+on social media platforms.  
+
+## I just want the plot, not the statistical details. How can I turn them off?
+
+All functions in `ggstatsplot` that display results from statistical analysis in
+a subtitle have argument `results.subtitle`. Setting it to `FALSE` will return
+only the plot.
+
+## What statistical test was carried out?
+
+In case you are not sure what was the statistical test that produced the results
+shown in the subtitle of the plot, the best way to get that information is to
+either look at the documentation for the function used or check out the
+associated vignette. For example, if you used the function `ggbetweenstats`, the
+details of the tests can be seen at the [summary table](https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/ggbetweenstats.html#summary-of-tests).
+Such summary tables are available for each function.
+
+## Does `ggstatsplot` work with `plotly`?
+
+The `plotly` R graphing library makes it easy to produce interactive web
+graphics via 'plotly.js'. `ggstatsplot` functions are compatible with `plotly`.
+ 
+```{r plotly, message = FALSE, warning = FALSE, fig.width = 4, fig.height = 4}
+# for reproducibility
+set.seed(123)
+library(ggstatsplot)
+library(plotly)
+
+# creating ggplot object with `ggstatsplot`
+p <- 
+  ggstatsplot::ggbetweenstats(
+  data = mtcars,
+  x = cyl,
+  y = mpg
+)
+
+# converting to plotly object
+plotly::ggplotly(p, width = 480, height = 480)
+```
+
+## How can I use `grouped_` functions with more than one group?
+
+Currently, the `grouped_` variants of functions only support repeating the
+analysis across a _single_ grouping variable. Often, you have to run the same
+analysis across a combination of more than two grouping variables. This can be
+easily achieved using `purrr` package. 
+
+Here is an example-
+
+```{r grouped_2, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 6}
+# setup
+set.seed(123)
+library(tidyverse, warn.conflicts = FALSE)
+library(ggstatsplot)
+
+# creating a list by splitting dataframe by combination of two different
+# grouping variables
+df_list <- mpg %>%
+  dplyr::filter(drv %in% c("4", "f"), fl %in% c("p", "r")) %>%
+  split(x = ., f = list(.$drv, .$fl), drop = TRUE)
+
+# checking if the length of the list is 4
+length(df_list)
+
+# running correlation analyses between
+# this will return a *list* of plots
+plot_list <-
+  purrr::pmap(
+    .l = list(
+      data = df_list,
+      x = "displ",
+      y = "hwy",
+      results.subtitle = FALSE,
+      marginal.type = "densigram"
+    ),
+    .f = ggstatsplot::ggscatterstats
+  )
+
+# arragen the list in a single plot
+ggstatsplot::combine_plots(
+  plotlist = plot_list,
+  nrow = 2,
+  labels = c("(i)", "(ii)", "(iii)", "(iv)")
+)
+```
+
+## Can you customize which pairs are shown in pairwise comparisons?
+
+Currently, for `ggbetweenstats` and `ggwithinstats`, you can either display all
+**significant** comparisons, all **non-significant** comparisons, or **all**
+comparisons. But what if I am only interested in just one particular comparison?
+
+Here is a workaround using `ggsignif`:
+
+```{r custom_pairwise}
+set.seed(123)
+library(ggstatsplot)
+library(ggsignif)
+
+# displaying only one comparison
+ggbetweenstats(mtcars, cyl, wt) +
+  geom_signif(comparisons = list(c("4", "6")))
+```
+
+## How to access dataframe with results from pairwise comparisons?
+
+```{r}
+library(ggstatsplot)
+library(ggplot2)
+
+# way-1
+
+p <- ggbetweenstats(mtcars, cyl, wt, pairwise.comparisons = TRUE)
+
+pb <- ggplot_build(p)
+
+pb$plot$plot_env$df_pairwise
+
+# way-2
+
+library(pairwiseComparisons)
+
+pairwise_comparisons(mtcars, cyl, wt)
+```
+
+## How can I remove a a particular `geom` layer from the plot?
+
+Sometimes you may not want a particular `geom` layer to be displayed. You can
+remove them using `gginnards`. 
+
+For example, let's say we want to remove the `geom_point()` from
+`ggbetweenstats` default plot.
+
+```{r gginnards, message = FALSE, warning = FALSE, fig.width = 5, fig.height = 5}
+# needed libraries
+library(ggstatsplot)
+library(gginnards)
+
+# plot with all geoms
+p <-
+  ggbetweenstats(
+    data = iris,
+    x = Species,
+    y = Sepal.Length,
+    mean.plotting = FALSE
+  )
+
+# delete geom corresponding to points
+gginnards::delete_layers(x = p, match_type = "GeomPoint")
+```
+
+This can be helpful to add a new layer with aesthetic specifications of your
+liking.
+
+```{r gginnards2, fig.width = 6, fig.height = 5}
+set.seed(123)
+
+# needed libraries
+library(ggstatsplot)
+library(gginnards)
+library(ggplot2)
+
+# basic plot without mean tagging
+p <-
+  ggwithinstats(
+    data = bugs_long,
+    x = condition,
+    y = desire,
+    mean.plotting = FALSE
+  )
+
+# delete the geom_point layer
+p <- gginnards::delete_layers(x = p, match_type = "GeomPoint")
+
+# add a new layers for points with a different shape
+p + geom_point(shape = 23, aes(color = condition))
+```
+
+# Suggestions
+
+If you find any bugs or have any suggestions/remarks, please file an issue on
+`GitHub`: <https://github.com/IndrajeetPatil/ggstatsplot/issues>
+
+# Session Information
+
+For details, see-
+<https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/session_info.html>

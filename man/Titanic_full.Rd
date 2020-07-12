@@ -4,16 +4,15 @@
 \name{Titanic_full}
 \alias{Titanic_full}
 \title{Titanic dataset.}
-\format{A data frame with 2201 rows and 5 variables
+\format{
+A data frame with 2201 rows and 5 variables
 \itemize{
 \item id. Dummy identity number for each person.
 \item Class.	1st, 2nd, 3rd, Crew.
 \item Sex.	Male, Female.
 \item Age.	Child, Adult.
 \item Survived.	No, Yes.
-}}
-\source{
-\url{https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/Titanic.html}
+}
 }
 \usage{
 Titanic_full
@@ -22,14 +21,15 @@ Titanic_full
 Titanic dataset.
 }
 \details{
-This data set provides information on the fate of passengers on the fatal
-maiden voyage of the ocean liner 'Titanic', summarized according to economic
-status (class), sex, age and survival.
+This data set provides information on the fate of passengers on the
+fatal maiden voyage of the ocean liner 'Titanic', summarized according to
+economic status (class), sex, age and survival.
 
 This is a modified dataset from \code{datasets} package.
 }
 \examples{
 dim(Titanic_full)
 head(Titanic_full)
+dplyr::glimpse(Titanic_full)
 }
 \keyword{datasets}

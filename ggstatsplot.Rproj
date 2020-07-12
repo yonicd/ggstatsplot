@@ -9,8 +9,8 @@ UseSpacesForTab: Yes
 NumSpacesForTab: 2
 Encoding: UTF-8
 
-RnwWeave: Sweave
-LaTeX: pdfLaTeX
+RnwWeave: knitr
+LaTeX: XeLaTeX
 
 AutoAppendNewline: Yes
 StripTrailingWhitespace: Yes
@@ -18,5 +18,8 @@ StripTrailingWhitespace: Yes
 BuildType: Package
 PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source
-PackageCheckArgs: --as-cran
+PackageCheckArgs: --run-donttest
 PackageRoxygenize: rd,collate,namespace
+
+QuitChildProcessesOnExit: Yes
+DisableExecuteRprofile: Yes

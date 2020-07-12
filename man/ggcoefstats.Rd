@@ -2,219 +2,286 @@
 % Please edit documentation in R/ggcoefstats.R
 \name{ggcoefstats}
 \alias{ggcoefstats}
-\title{Model coefficients for fitted models with the model summary as a
-caption.}
+\title{Dot-and-whisker plots for regression analyses}
 \usage{
-ggcoefstats(x, output = "plot", scales = NULL, conf.method = "Wald",
-  p.kr = TRUE, coefficient.type = "beta", effsize = "eta",
-  partial = TRUE, nboot = 500, point.color = "blue",
-  point.size = 3, point.shape = 16, conf.int = TRUE,
-  conf.level = 0.95, se.type = "nid", k = 3, k.caption.summary = 0,
-  exclude.intercept = TRUE, exponentiate = FALSE,
-  errorbar.color = "black", errorbar.height = 0,
-  errorbar.linetype = "solid", errorbar.size = 0.5, vline = TRUE,
-  vline.color = "black", vline.linetype = "dashed", vline.size = 1,
-  sort = "none", xlab = "regression coefficient", ylab = "term",
-  title = NULL, subtitle = NULL, stats.labels = TRUE,
-  caption.summary = TRUE, stats.label.size = 3,
-  stats.label.fontface = "bold", stats.label.color = NULL,
-  label.r = 0.15, label.size = 0.25, label.box.padding = 1,
-  label.label.padding = 0.25, label.point.padding = 0.5,
-  label.segment.color = "grey50", label.segment.size = 0.5,
-  label.segment.alpha = NULL, label.min.segment.length = 0.5,
-  label.force = 1, label.max.iter = 2000, label.nudge.x = 0,
-  label.nudge.y = 0, label.xlim = c(NA, NA), label.ylim = c(NA, NA),
-  label.direction = "y", package = "RColorBrewer", palette = "Dark2",
-  direction = 1, ggtheme = ggplot2::theme_bw(),
-  ggstatsplot.layer = TRUE, ...)
+ggcoefstats(
+  x,
+  output = "plot",
+  statistic = NULL,
+  conf.int = TRUE,
+  conf.level = 0.95,
+  k = 2L,
+  exclude.intercept = TRUE,
+  exponentiate = FALSE,
+  effsize = "eta",
+  partial = TRUE,
+  meta.analytic.effect = FALSE,
+  meta.type = "parametric",
+  bf.message = TRUE,
+  sort = "none",
+  xlab = "regression coefficient",
+  ylab = "term",
+  title = NULL,
+  subtitle = NULL,
+  caption = NULL,
+  only.significant = FALSE,
+  point.args = list(size = 3, color = "blue"),
+  errorbar.args = list(height = 0),
+  vline = TRUE,
+  vline.args = list(size = 1, linetype = "dashed"),
+  stats.labels = TRUE,
+  stats.label.color = NULL,
+  stats.label.args = list(size = 3, direction = "y"),
+  package = "RColorBrewer",
+  palette = "Dark2",
+  ggtheme = ggplot2::theme_bw(),
+  ggstatsplot.layer = TRUE,
+  ...
+)
 }
 \arguments{
-\item{x}{A model object to be tidied with \code{broom::tidy}.}
+\item{x}{A model object to be tidied, or a tidy data frame containing results
+from a regression model. Function internally uses
+\code{parameters::model_parameters} or \code{broom::tidy} to get a tidy dataframe. If
+a data frame is used, it \emph{must} contain columns named \code{term} (names of
+predictors) and \code{estimate} (corresponding estimates of coefficients or
+other quantities of interest).}
 
 \item{output}{Character describing the expected output from this function:
 \code{"plot"} (visualization of regression coefficients) or \code{"tidy"} (tidy
 dataframe of results from \code{broom::tidy}) or \code{"glance"} (object from
 \code{broom::glance}) or \code{"augment"} (object from \code{broom::augment}).}
 
-\item{scales}{scales on which to report the variables: for random effects, the choices are \sQuote{"sdcor"} (standard deviations and correlations: the default if \code{scales} is \code{NULL}) or \sQuote{"vcov"} (variances and covariances). \code{NA} means no transformation, appropriate e.g. for fixed effects; inverse-link transformations (exponentiation or logistic) are not yet implemented, but may be in the future.}
-
-\item{conf.method}{Character describing method for computing confidence
-intervals (for more, see \code{lme4::confint.merMod}). This argument is valid
-only for the \code{merMod} class model objects (\code{lmer}, \code{glmer}, \code{nlmer}, etc.).}
-
-\item{p.kr}{Logical, if \code{TRUE}, the computation of p-values for \code{lmer} is
-based on conditional F-tests with Kenward-Roger approximation for the df.
-For details, see \code{?sjstats::p_value}.}
-
-\item{coefficient.type}{Relevant only for ordinal regression models (\code{clm}
-and \code{clmm}), this argument decides which parameters to display in the plot.
-By default only \code{"beta"} (a vector of regression parameters) parameters
-will be show. Other options are \code{"alpha"} (a vector of threshold
-parameters) or \code{"both"}.}
-
-\item{effsize}{Character describing the effect size to be displayed: \code{"eta"}
-(default) or \code{"omega"}. This argument is relevant
-only for models objects of class \code{aov}, \code{anova}, and \code{aovlist}.}
-
-\item{partial}{Logical that decides if partial eta-squared or omega-squared
-are returned (Default: \code{TRUE}). If \code{FALSE}, eta-squared or omega-squared
-will be returned. Valid only for objects of class \code{aov}, \code{anova}, or
-\code{aovlist}.}
-
-\item{nboot}{Number of bootstrap samples for confidence intervals for partial
-eta-squared and omega-squared (Default: \code{500}). This argument is relevant
-only for models objects of class \code{aov}, \code{anova}, and \code{aovlist}.}
-
-\item{point.color}{Character describing color for the point (Default:
-\code{"blue"}).}
-
-\item{point.size}{Numeric specifying size for the point (Default: \code{3}).}
-
-\item{point.shape}{Numeric specifying shape to draw the points (Default: \code{16}
-(\strong{a dot})).}
+\item{statistic}{Which statistic is to be displayed (either \code{"t"} or \code{"f"}or
+\code{"z"}) in the label. This is relevant if the \code{x} argument is a dataframe.}
 
 \item{conf.int}{Logical. Decides whether to display confidence intervals as
 error bars (Default: \code{TRUE}).}
 
 \item{conf.level}{Numeric deciding level of confidence intervals (Default:
-\code{0.95}).}
+\code{0.95}). For \code{MCMC} model objects (\code{Stan}, \code{JAGS}, etc.), this will be
+probability level for CI.}
 
-\item{se.type}{Character specifying the method used to compute standard
-standard errors for quantile regression (Default: \code{"nid"}). To see all
-available methods, see \code{quantreg::summary.rq()}.}
-
-\item{k}{Number of decimal places expected for results displayed in labels.}
-
-\item{k.caption.summary}{Number of decimal places expected for results
-displayed in captions.}
+\item{k}{Number of digits after decimal point (should be an integer)
+(Default: \code{k = 2}).}
 
 \item{exclude.intercept}{Logical that decides whether the intercept should be
 excluded from the plot (Default: \code{TRUE}).}
 
 \item{exponentiate}{If \code{TRUE}, the \code{x}-axis will be logarithmic (Default:
-\code{FALSE}).}
+\code{FALSE}). Note that exponents for the coefficient estimates and associated
+standard errors plus confidence intervals are computed by the underlying
+tidying packages (\code{broom}/\code{parameters}) and not done by \code{ggcoefstats}. So
+this might not work if the underlying packages don't support
+exponentiation.}
 
-\item{errorbar.color}{Character deciding color of the error bars (Default:
-\code{"black"}).}
+\item{effsize}{Character describing the effect size to be displayed: \code{"eta"}
+(default) or \code{"omega"}. This argument is relevant only for models objects
+of class \code{aov}, \code{anova}, \code{aovlist}, \code{"Gam"}, and \code{"manova"}.}
 
-\item{errorbar.height}{Numeric specifying the height of the error bars
-(Default: \code{0}).}
+\item{partial}{Logical that decides if partial eta-squared or partial
+omega-squared are returned (Default: \code{TRUE}). If \code{FALSE}, eta-squared or
+omega-squared will be returned.}
 
-\item{errorbar.linetype}{Line type of the error bars (Default: \code{"solid"}).}
+\item{meta.analytic.effect}{Logical that decides whether subtitle for
+meta-analysis via linear (mixed-effects) models (default: \code{FALSE}). If
+\code{TRUE}, input to argument \code{subtitle} will be ignored. This will be mostly
+relevant if a data frame with estimates and their standard errors is
+entered.}
 
-\item{errorbar.size}{Numeric specifying the size of the error bars (Default:
-\code{0.5}).}
+\item{meta.type}{Type of statistics used to carry out random-effects
+meta-analysis. If \code{"parametric"} (default), \code{metafor::rma} function will be
+used. If \code{"robust"}, \code{metaplus::metaplus} function will be used. If
+\code{"bayes"}, \code{metaBMA::meta_random} function will be used.}
 
-\item{vline}{Decides whether to display a vertical line (Default: \code{"TRUE"}).}
+\item{bf.message}{Logical that decides whether results from running a
+Bayesian meta-analysis assuming that the effect size \emph{d} varies across
+studies with standard deviation \emph{t} (i.e., a random-effects analysis)
+should be displayed in caption. Defaults to \code{TRUE}.}
 
-\item{vline.color}{Character specifying color of the vertical line (Default:
-\code{"black"}).}
+\item{sort}{If \code{"none"} (default) do not sort, \code{"ascending"} sort by
+increasing coefficient value, or \code{"descending"} sort by decreasing
+coefficient value.}
 
-\item{vline.linetype}{Character specifying line type of the vertical line
-(Default: \code{"dashed"}).}
-
-\item{vline.size}{Numeric specifying the size of the vertical line (Default:
-\code{1}).}
-
-\item{sort}{If \code{"none"} (default) do not sort, \code{"ascending"} sort by increasing
-coefficient value, or \code{"descending"} sort by decreasing coefficient value.}
-
-\item{xlab}{Label for \code{x} axis variable (Default: \code{"estimate"}).}
-
-\item{ylab}{Label for \code{y} axis variable (Default: \code{"term"}).}
+\item{xlab, ylab}{Labels for \code{x}- and \code{y}- axis variables, respectively
+(Defaults: \code{"regression coefficient"} and \code{"term"}).}
 
 \item{title}{The text for the plot title.}
 
-\item{subtitle}{The text for the plot subtitle.}
+\item{subtitle}{The text for the plot subtitle. The input to this argument
+will be ignored if \code{meta.analytic.effect} is set to \code{TRUE}.}
 
-\item{stats.labels}{Logical. Decides whether the statistic and p-values for
+\item{caption}{Text to display as caption. This argument is relevant only
+when \code{output = "caption"}.}
+
+\item{only.significant}{If \code{TRUE}, only stats labels for significant effects
+is shown (Default: \code{FALSE}). This can be helpful when a large number of
+regression coefficients are to be displayed in a single plot. Relevant only
+when the \code{output} is a plot.}
+
+\item{point.args}{Additional arguments that will be passed to
+\code{ggplot2::geom_point} geom. Please see documentation for that function to
+know more about these arguments.}
+
+\item{errorbar.args}{Additional arguments that will be passed to
+\code{ggplot2::geom_errorbarh} geom. Please see documentation for that function
+to know more about these arguments.}
+
+\item{vline}{Decides whether to display a vertical line (Default: \code{"TRUE"}).}
+
+\item{vline.args}{Additional arguments that will be passed to
+\code{ggplot2::geom_vline} geom. Please see documentation for that function to
+know more about these arguments.}
+
+\item{stats.labels}{Logical. Decides whether the statistic and \emph{p}-values for
 each coefficient are to be attached to each dot as a text label using
 \code{ggrepel} (Default: \code{TRUE}).}
 
-\item{caption.summary}{Logical. Decides whether the model summary should be
-displayed as a cation to the plot (Default: \code{TRUE}). Color of the line
-segment. Defaults to the same color as the text.}
+\item{stats.label.color}{Color for the labels. If set to \code{NULL}, colors will
+be chosen from the specified \code{package} (Default: \code{"RColorBrewer"}) and
+\code{palette} (Default: \code{"Dark2"}).}
 
-\item{stats.label.size, stats.label.fontface, stats.label.color}{Aesthetics for
-the labels. Defaults: \code{3}, \code{"bold"},\code{NULL}, resp. If \code{stats.label.color} is
-\code{NULL}, colors will be chosen from the specified \code{package} (Default:
-\code{"RColorBrewer"}) and \code{palette} (Default: \code{"Dark2"}).}
-
-\item{label.r, }{Radius of rounded corners, as unit or number. Defaults to
-\code{0.15}. (Default unit is lines).}
-
-\item{label.size}{Size of label border, in mm. Defaults to \code{0.25}.}
-
-\item{label.box.padding}{Amount of padding around bounding box, as number.
-Defaults to \code{1}. (Default unit is lines).}
-
-\item{label.label.padding}{Amount of padding around label, as number.
-Defaults to \code{0.25}. (Default unit is lines).}
-
-\item{label.point.padding}{Amount of padding around labeled point, as
-number. Defaults to \code{0}. (Default unit is lines).}
-
-\item{label.segment.color}{Color of the line segment (Default: \code{"grey50"}).}
-
-\item{label.segment.size}{Width of line segment connecting the data point to
-the text label, in mm. Defaults to \code{0.5}.}
-
-\item{label.segment.alpha}{Transparency of the line segment. Defaults to the
-same transparency as the text.}
-
-\item{label.min.segment.length}{Skip drawing segments shorter than this.
-Defaults to \code{0.5}. (Default unit is lines).}
-
-\item{label.force}{Force of repulsion between overlapping text labels.
-Defaults to \code{1}.}
-
-\item{label.max.iter}{Maximum number of iterations to try to resolve
-overlaps. Defaults to \code{2000}.}
-
-\item{label.nudge.x, label.nudge.y}{Horizontal and vertical adjustments to
-nudge the starting position of each text label. Defaults to \code{0}.}
-
-\item{label.xlim, label.ylim}{Limits for the x and y axes. Text labels will be
-constrained to these limits. By default, text labels are constrained to the
-entire plot area. Defaults to \code{c(NA, NA)}.}
-
-\item{label.direction}{Character (\code{"both"}, \code{"x"}, or \code{"y"}) -- direction in
-which to adjust position of labels (Default: \code{"y"}).}
+\item{stats.label.args}{Additional arguments that will be passed to
+\code{ggrepel::geom_label_repel} geom. Please see documentation for that
+function to know more about these arguments.}
 
 \item{package}{Name of package from which the palette is desired as string
 or symbol.}
 
 \item{palette}{Name of palette as string or symbol.}
 
-\item{direction}{Either \code{1} or \code{-1}. If \code{-1} the palette will be reversed.}
-
 \item{ggtheme}{A function, \code{ggplot2} theme name. Default value is
 \code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
-extension packages are allowed (e.g., \code{ggthemes::theme_economist()},
-\code{hrbrthemes::theme_ipsum_ps()}, \code{ggthemes::theme_fivethirtyeight()}, etc.).}
+extension packages are allowed (e.g., \code{ggthemes::theme_fivethirtyeight()},
+\code{hrbrthemes::theme_ipsum_ps()}, etc.).}
 
 \item{ggstatsplot.layer}{Logical that decides whether \code{theme_ggstatsplot}
 theme elements are to be displayed along with the selected \code{ggtheme}
-(Default: \code{TRUE}).}
+(Default: \code{TRUE}). \code{theme_ggstatsplot} is an opinionated theme layer that
+override some aspects of the selected \code{ggtheme}.}
 
-\item{\dots}{Extra arguments to pass to \code{\link[broom]{tidy}}.}
+\item{...}{Additional arguments to tidying method. For more, see
+\code{?parameters::model_parameters} and \code{broom::tidy}.}
 }
 \value{
 Plot with the regression coefficients' point estimates as dots with
-confidence interval whiskers.
+confidence interval whiskers and other statistical details included as
+labels.
 }
 \description{
-Model coefficients for fitted models with the model summary as a
-caption.
+Dot-and-whisker plots for regression analyses
 }
 \examples{
-
+\donttest{
+# for reproducibility
 set.seed(123)
-ggcoefstats(x = lm(formula = mpg ~ cyl * am, data = mtcars))
+
+# -------------- with model object --------------------------------------
+
+# model object
+mod <- lm(formula = mpg ~ cyl * am, data = mtcars)
+
+# to get a plot
+ggstatsplot::ggcoefstats(x = mod, output = "plot")
+
+# to get a tidy dataframe
+ggstatsplot::ggcoefstats(x = mod, output = "tidy")
+
+# to get a glance summary
+ggstatsplot::ggcoefstats(x = mod, output = "glance")
+
+# to get augmented dataframe
+ggstatsplot::ggcoefstats(x = mod, output = "augment")
+
+# -------------- with custom dataframe -----------------------------------
+
+# creating a dataframe
+df <-
+  structure(
+    list(
+      term = structure(
+        c(3L, 4L, 1L, 2L, 5L),
+        .Label = c(
+          "Africa",
+          "Americas", "Asia", "Europe", "Oceania"
+        ),
+        class = "factor"
+      ),
+      estimate = c(
+        0.382047603321706,
+        0.780783111514665,
+        0.425607573765058,
+        0.558365541235078,
+        0.956473848429961
+      ),
+      std.error = c(
+        0.0465576338644502,
+        0.0330218199731529,
+        0.0362834986178494,
+        0.0480571500648261,
+        0.062215818388157
+      ),
+      statistic = c(
+        8.20590677855356,
+        23.6444603038067,
+        11.7300588415607,
+        11.6187818146078,
+        15.3734833553524
+      ),
+      conf.low = c(
+        0.290515146096969,
+        0.715841986960399,
+        0.354354575031406,
+        0.46379116008131,
+        0.827446138277154
+      ),
+      conf.high = c(
+        0.473580060546444,
+        0.845724236068931,
+        0.496860572498711,
+        0.652939922388847,
+        1.08550155858277
+      ),
+      p.value = c(
+        3.28679518728519e-15,
+        4.04778497135963e-75,
+        7.59757330804449e-29,
+        5.45155840151592e-26,
+        2.99171217913312e-13
+      ),
+      df.error = c(
+        394L, 358L, 622L,
+        298L, 22L
+      )
+    ),
+    row.names = c(NA, -5L),
+    class = c(
+      "tbl_df",
+      "tbl", "data.frame"
+    )
+  )
+
+# plotting the dataframe
+ggstatsplot::ggcoefstats(
+  x = df,
+  statistic = "t",
+  meta.analytic.effect = TRUE,
+  k = 3
+)
+
+# -------------- getting model summary ------------------------------
+
+# model
+library(lme4)
+lmm1 <- lme4::lmer(
+  formula = Reaction ~ Days + (Days | Subject),
+  data = sleepstudy
+)
+
+# dataframe with model summary
+ggstatsplot::ggcoefstats(x = lmm1, output = "glance")
+}
 }
 \references{
-\url{https://cran.r-project.org/package=ggstatsplot/vignettes/ggcoefstats.html}
-}
-\author{
-Indrajeet Patil
+\url{https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/ggcoefstats.html}
 }

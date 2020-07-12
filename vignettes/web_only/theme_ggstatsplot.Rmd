@@ -18,19 +18,24 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
+# show me all columns
+options(tibble.width = Inf)
+
 knitr::opts_chunk$set(
   dpi = 300,
   out.width = "100%",
   collapse = TRUE,
+  message = FALSE,
+  warning = FALSE,
   comment = "#>"
 )
 ```
 
 ## Default theme for the package: `theme_ggstatsplot`
 
-`ggstatsplot` uses a default theme `theme_ggstatsplot()`, which is a selected `ggplot2`
-theme with few aesthetic modifications overlaid on top, that can be used with any
-`ggplot2` object. Alternative name for this function is `theme_mprl`.
+`ggstatsplot` uses a default theme `theme_ggstatsplot()`, which is a selected
+`ggplot2` theme with few aesthetic modifications overlaid on top, that can be
+used with any `ggplot2` object.
 
 Here is a simple example:
 
@@ -38,22 +43,15 @@ Here is a simple example:
 library(ggplot2)
 
 ggstatsplot::combine_plots(
-  # basic scatter plot
-  ggplot2::ggplot(
-    data = datasets::mtcars,
-    mapping = ggplot2::aes(x = wt, y = mpg)
-  ) +
-    ggplot2::geom_point(),
-  # basic scatter plot with theme_ggstatsplot() added
-  ggplot2::ggplot(
-    data = datasets::mtcars,
-    mapping = ggplot2::aes(x = wt, y = mpg)
-  ) +
-    ggplot2::geom_point() +
+  # basic scatter plot with `theme_ggstatsplot()` added
+  ggplot(mtcars, aes(x = wt, y = mpg)) +
+    geom_point() +
     ggstatsplot::theme_ggstatsplot(),
-  labels = c("(i)", "(ii)"),
+  # basic scatter plot without the default theme
+  ggplot(mtcars, aes(x = wt, y = mpg)) +
+    geom_point(),
   nrow = 1,
-  title.text = "Plot with and without ggstatsplot theme"
+  title.text = "Plot with and without the default `theme_ggstatsplot` overlaid"
 )
 ```
 
@@ -66,25 +64,20 @@ ggstatsplot::ggcorrmat(
   data = datasets::iris,
   cor.vars = c(Sepal.Length:Petal.Width),
   matrix.type = "upper",
-  ggtheme = ggthemes::theme_fivethirtyeight(),            # selected ggplot2 theme
-  ggstatsplot.layer = FALSE
+  ggtheme = ggthemes::theme_fivethirtyeight(), # selected ggplot2 theme
+  ggstatsplot.layer = FALSE # turn of default theme layer
 )
 ```
 
 Try modifying the theme for other functions (use themes from `ggplot2`,
-`ggthemes`, `hrbrthemes`, etc.)!
+`ggthemes`, `hrbrthemes`, etc.).
 
 # Suggestions
 
 If you find any bugs or have any suggestions/remarks, please file an issue on
-GitHub: <https://github.com/IndrajeetPatil/ggstatsplot/issues>
+`GitHub`: <https://github.com/IndrajeetPatil/ggstatsplot/issues>
 
 # Session Information
 
-Summarizing session information for reproducibility.
-
-```{r session_info}
-options(width = 200)
-devtools::session_info()
-```
-
+For details, see-
+<https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/session_info.html>

@@ -5,246 +5,224 @@
 \title{Violin plots for group or condition comparisons in between-subjects
 designs repeated across all levels of a grouping variable.}
 \usage{
-grouped_ggbetweenstats(data, x, y, grouping.var, title.prefix = "Group",
-  plot.type = "boxviolin", type = "parametric",
-  effsize.type = "unbiased", effsize.noncentral = FALSE,
-  bf.prior = 0.707, bf.message = FALSE, xlab = NULL, ylab = NULL,
-  caption = NULL, sample.size.label = TRUE, k = 3,
-  var.equal = FALSE, nboot = 100, tr = 0.1, mean.label.size = 3,
-  mean.label.fontface = "bold", mean.label.color = "black",
-  notch = FALSE, notchwidth = 0.5, linetype = "solid",
-  outlier.tagging = NULL, outlier.label = NULL,
-  outlier.label.color = "black", outlier.color = "black",
-  outlier.coef = 1.5, mean.plotting = TRUE, mean.ci = FALSE,
-  mean.size = 5, mean.color = "darkred", point.jitter.width = NULL,
-  point.jitter.height = 0.2, point.dodge.width = 0.75,
-  ggtheme = ggplot2::theme_bw(), ggstatsplot.layer = TRUE,
-  package = "RColorBrewer", palette = "Dark2", direction = 1,
-  messages = TRUE, ...)
+grouped_ggbetweenstats(
+  data,
+  x,
+  y,
+  grouping.var,
+  outlier.label = NULL,
+  title.prefix = NULL,
+  output = "plot",
+  ...,
+  plotgrid.args = list(),
+  title.text = NULL,
+  title.args = list(size = 16, fontface = "bold"),
+  caption.text = NULL,
+  caption.args = list(size = 10),
+  sub.text = NULL,
+  sub.args = list(size = 12)
+)
 }
 \arguments{
-\item{data}{Dataframe from which variables specified are preferentially to be
-taken.}
+\item{data}{A dataframe (or a tibble) from which variables specified are to
+be taken. A matrix or tables will \strong{not} be accepted.}
 
-\item{x}{The grouping variable.}
+\item{x}{The grouping variable from the dataframe \code{data}.}
 
-\item{y}{The response - a vector of length the number of rows of \code{x}.}
+\item{y}{The response (a.k.a. outcome or dependent) variable from the
+dataframe \code{data}.}
 
-\item{grouping.var}{Grouping variable.}
+\item{grouping.var}{A single grouping variable (can be entered either as a
+bare name \code{x} or as a string \code{"x"}).}
 
-\item{title.prefix}{Character specifying the prefix text for the fixed plot
-title (name of each factor level) (Default: \code{"Group"}).}
+\item{outlier.label}{Label to put on the outliers that have been tagged. This
+\strong{can't} be the same as \code{x} argument.}
 
-\item{plot.type}{Character describing the \emph{type} of plot. Currently supported
+\item{title.prefix}{Character string specifying the prefix text for the fixed
+plot title (name of each factor level) (Default: \code{NULL}). If \code{NULL}, the
+variable name entered for \code{grouping.var} will be used.}
+
+\item{output}{Character that describes what is to be returned: can be
+\code{"plot"} (default) or \code{"subtitle"} or \code{"caption"}. Setting this to
+\code{"subtitle"} will return the expression containing statistical results. If
+you have set \code{results.subtitle = FALSE}, then this will return a \code{NULL}.
+Setting this to \code{"caption"} will return the expression containing details
+about Bayes Factor analysis, but valid only when \code{type = "parametric"} and
+\code{bf.message = TRUE}, otherwise this will return a \code{NULL}. For functions
+\code{ggpiestats} and \code{ggbarstats}, setting \code{output = "proptest"} will return a
+dataframe containing results from proportion tests.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=ggbetweenstats]{ggbetweenstats}}
+  \describe{
+    \item{\code{plot.type}}{Character describing the \emph{type} of plot. Currently supported
 plots are \code{"box"} (for pure boxplots), \code{"violin"} (for pure violin plots),
-and \code{"boxviolin"} (for a mix of box and violin plots; default).}
-
-\item{type}{Type of statistic expected (\code{"parametric"} or \code{"nonparametric"}
-or \code{"robust"} or \code{"bayes"}).Corresponding abbreviations are also accepted:
-\code{"p"} (for parametric), \code{"np"} (nonparametric), \code{"r"} (robust), or
-\code{"bf"}resp.}
-
-\item{effsize.type}{Type of effect size needed for \emph{parametric} tests. The
-argument can be \code{"biased"} (\code{"d"} for Cohen's \emph{d} for \strong{t-test};
-\code{"partial_eta"} for partial eta-squared for \strong{anova}) or \code{"unbiased"}
-(\code{"g"} Hedge's \emph{g} for \strong{t-test}; \code{"partial_omega"} for partial
-omega-squared for \strong{anova})).}
-
-\item{effsize.noncentral}{Logical indicating whether to use non-central
-\emph{t}-distributions for computing the confidence interval for Cohen's \emph{d}
-or Hedge's \emph{g} (Default: \code{FALSE}).
-@param conf.level Scalar between 0 and 1. If unspecified, the defaults return 95%
-lower and upper confidence intervals (\code{0.95}).}
-
-\item{bf.prior}{A number between 0.5 and 2 (default \code{0.707}), the prior width
-to use in calculating Bayes factors.}
-
-\item{bf.message}{Logical. Decides whether to display Bayes Factor in favor
-of \emph{null} hypothesis \strong{for parametric test} (Default: \code{bf.message = FALSE}).}
-
-\item{xlab}{Label for \code{x} axis variable.}
-
-\item{ylab}{Label for \code{y} axis variable.}
-
-\item{caption}{The text for the plot caption.}
-
-\item{sample.size.label}{Logical that decides whether sample size information
+and \code{"boxviolin"} (for a combination of box and violin plots; default).}
+    \item{\code{xlab}}{Labels for \code{x} and \code{y} axis variables. If \code{NULL} (default),
+variable names for \code{x} and \code{y} will be used.}
+    \item{\code{ylab}}{Labels for \code{x} and \code{y} axis variables. If \code{NULL} (default),
+variable names for \code{x} and \code{y} will be used.}
+    \item{\code{pairwise.comparisons}}{Logical that decides whether pairwise comparisons
+are to be displayed (default: \code{FALSE}). Please note that only
+\strong{significant} comparisons will be shown by default. To change this
+behavior, select appropriate option with \code{pairwise.display} argument. The
+pairwise comparison dataframes are prepared using the
+\code{pairwiseComparisons::pairwise_comparisons} function. For more details
+about pairwise comparisons, see the documentation for that function.}
+    \item{\code{p.adjust.method}}{Adjustment method for \emph{p}-values for multiple
+comparisons. Possible methods are: \code{"holm"} (default), \code{"hochberg"},
+\code{"hommel"}, \code{"bonferroni"}, \code{"BH"}, \code{"BY"}, \code{"fdr"}, \code{"none"}.}
+    \item{\code{pairwise.display}}{Decides which pairwise comparisons to display.
+Available options are \code{"significant"} (abbreviation accepted: \code{"s"}) or
+\code{"non-significant"} (abbreviation accepted: \code{"ns"}) or
+\code{"everything"}/\code{"all"}. The default is \code{"significant"}. You can use this
+argument to make sure that your plot is not uber-cluttered when you have
+multiple groups being compared and scores of pairwise comparisons being
+displayed.}
+    \item{\code{bf.prior}}{A number between \code{0.5} and \code{2} (default \code{0.707}), the prior
+width to use in calculating Bayes factors.}
+    \item{\code{bf.message}}{Logical that decides whether to display Bayes Factor in
+favor of the \emph{null} hypothesis. This argument is relevant only \strong{for
+parametric test} (Default: \code{TRUE}).}
+    \item{\code{results.subtitle}}{Decides whether the results of statistical tests are
+to be displayed as a subtitle (Default: \code{TRUE}). If set to \code{FALSE}, only
+the plot will be returned.}
+    \item{\code{subtitle}}{The text for the plot subtitle. Will work only if
+\code{results.subtitle = FALSE}.}
+    \item{\code{caption}}{The text for the plot caption.}
+    \item{\code{sample.size.label}}{Logical that decides whether sample size information
 should be displayed for each level of the grouping variable \code{x} (Default:
 \code{TRUE}).}
-
-\item{k}{Number of digits after decimal point (should be an integer)
-(Default: \code{k = 3}).}
-
-\item{var.equal}{a logical variable indicating whether to treat the
+    \item{\code{notch}}{A logical. If \code{FALSE} (default), a standard box plot will be
+displayed. If \code{TRUE}, a notched box plot will be used. Notches are used to
+compare groups; if the notches of two boxes do not overlap, this suggests
+that the medians are significantly different. In a notched box plot, the
+notches extend \code{1.58 * IQR / sqrt(n)}. This gives a roughly \verb{95\%}
+confidence interval for comparing medians. IQR: Inter-Quartile Range.}
+    \item{\code{notchwidth}}{For a notched box plot, width of the notch relative to the
+body (default \code{0.5}).}
+    \item{\code{outlier.color}}{Default aesthetics for outliers (Default: \code{"black"}).}
+    \item{\code{outlier.tagging}}{Decides whether outliers should be tagged (Default:
+\code{FALSE}).}
+    \item{\code{outlier.shape}}{Hiding the outliers can be achieved by setting
+\code{outlier.shape = NA}. Importantly, this does not remove the outliers,
+it only hides them, so the range calculated for the \code{y}-axis will be
+the same with outliers shown and outliers hidden.}
+    \item{\code{outlier.point.args}}{A list of additional aesthetic arguments to be
+passed to \code{ggplot2::geom_point} and \code{ggrepel::geom_label_repel} geoms
+involved outlier value plotting.}
+    \item{\code{outlier.label.args}}{A list of additional aesthetic arguments to be
+passed to \code{ggplot2::geom_point} and \code{ggrepel::geom_label_repel} geoms
+involved outlier value plotting.}
+    \item{\code{outlier.coef}}{Coefficient for outlier detection using Tukey's method.
+With Tukey's method, outliers are below (1st Quartile) or above (3rd
+Quartile) \code{outlier.coef} times the Inter-Quartile Range (IQR) (Default:
+\code{1.5}).}
+    \item{\code{mean.plotting}}{Logical that decides whether mean is to be highlighted
+and its value to be displayed (Default: \code{TRUE}).}
+    \item{\code{mean.ci}}{Logical that decides whether \verb{95\%} confidence interval for
+mean is to be displayed (Default: \code{FALSE}).}
+    \item{\code{point.args}}{A list of additional aesthetic arguments to be passed to
+the \code{geom_point} displaying the raw data.}
+    \item{\code{violin.args}}{A list of additional aesthetic arguments to be passed to
+the \code{geom_violin}.}
+    \item{\code{ggplot.component}}{A \code{ggplot} component to be added to the plot prepared
+by \code{ggstatsplot}. This argument is primarily helpful for \code{grouped_} variant
+of the current function. Default is \code{NULL}. The argument should be entered
+as a function.}
+    \item{\code{package}}{Name of package from which the palette is desired as string
+or symbol.}
+    \item{\code{palette}}{Name of palette as string or symbol.}
+    \item{\code{mean.point.args}}{A list of additional aesthetic
+arguments to be passed to \code{ggplot2::geom_point} and
+\code{ggrepel::geom_label_repel} geoms involved mean value plotting.}
+    \item{\code{mean.label.args}}{A list of additional aesthetic
+arguments to be passed to \code{ggplot2::geom_point} and
+\code{ggrepel::geom_label_repel} geoms involved mean value plotting.}
+    \item{\code{ggtheme}}{A function, \code{ggplot2} theme name. Default value is
+\code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
+extension packages are allowed (e.g., \code{ggthemes::theme_fivethirtyeight()},
+\code{hrbrthemes::theme_ipsum_ps()}, etc.).}
+    \item{\code{ggstatsplot.layer}}{Logical that decides whether \code{theme_ggstatsplot}
+theme elements are to be displayed along with the selected \code{ggtheme}
+(Default: \code{TRUE}). \code{theme_ggstatsplot} is an opinionated theme layer that
+override some aspects of the selected \code{ggtheme}.}
+    \item{\code{effsize.type}}{Type of effect size needed for \emph{parametric} tests. The
+argument can be \code{"biased"} (equivalent to \code{"d"} for Cohen's \emph{d} for
+\strong{t-test}; \code{"partial_eta"} for partial eta-squared for \strong{anova}) or
+\code{"unbiased"} (equivalent to \code{"g"} Hedge's \emph{g} for \strong{t-test};
+\code{"partial_omega"} for partial omega-squared for \strong{anova})).}
+    \item{\code{partial}}{If \code{TRUE}, return partial indices.}
+    \item{\code{k}}{Number of digits after decimal point (should be an integer)
+(Default: \code{k = 2}).}
+    \item{\code{var.equal}}{a logical variable indicating whether to treat the
     variances in the samples as equal.  If \code{TRUE}, then a simple F
     test for the equality of means in a one-way analysis of variance is
     performed.  If \code{FALSE}, an approximate method of Welch (1951)
     is used, which generalizes the commonly known 2-sample Welch test to
     the case of arbitrarily many samples.}
-
-\item{nboot}{Number of bootstrap samples for computing effect size (Default:
-\code{100}).}
-
-\item{tr}{Trim level for the mean when carrying out \code{robust} tests. If you
+    \item{\code{conf.level}}{Scalar between 0 and 1. If unspecified, the defaults return
+\verb{95\%} lower and upper confidence intervals (\code{0.95}).}
+    \item{\code{type}}{Type of statistic expected (\code{"parametric"} or \code{"nonparametric"}
+or \code{"robust"} or \code{"bayes"}).Corresponding abbreviations are also accepted:
+\code{"p"} (for parametric), \code{"np"} (nonparametric), \code{"r"} (robust), or
+\code{"bf"}resp.}
+    \item{\code{nboot}}{Number of bootstrap samples for computing confidence interval
+for the effect size (Default: \code{100}).}
+    \item{\code{tr}}{Trim level for the mean when carrying out \code{robust} tests. If you
 get error stating "Standard error cannot be computed because of Winsorized
 variance of 0 (e.g., due to ties). Try to decrease the trimming level.",
 try to play around with the value of \code{tr}, which is by default set to
 \code{0.1}. Lowering the value might help.}
+  }}
 
-\item{mean.label.size}{Aesthetics for
-the label displaying mean. Defaults: \code{3}, \code{"bold"},\code{"black"}, respectively.}
+\item{plotgrid.args}{A list of additional arguments to \code{cowplot::plot_grid}.}
 
-\item{mean.label.fontface}{Aesthetics for
-the label displaying mean. Defaults: \code{3}, \code{"bold"},\code{"black"}, respectively.}
-
-\item{mean.label.color}{Aesthetics for
-the label displaying mean. Defaults: \code{3}, \code{"bold"},\code{"black"}, respectively.}
-
-\item{notch}{A logical. If \code{FALSE} (default), a standard box plot will be
-displayed. If \code{TRUE}, a notched box plot will be used. Notches are used to
-compare groups; if the notches of two boxes do not overlap, this suggests
-that the medians are significantly different. In a notched box plot, the
-notches extend \code{1.58 * IQR / sqrt(n)}. This gives a roughly \code{95\%} confidence
-interval for comparing medians. IQR: Inter-Quartile Range.}
-
-\item{notchwidth}{For a notched box plot, width of the notch relative to the
-body (default \code{0.5}).}
-
-\item{linetype}{Character strings (\code{"blank"}, \code{"solid"}, \code{"dashed"},
-\code{"dotted"}, \code{"dotdash"}, \code{"longdash"}, and \code{"twodash"}) specifying the type
-of line to draw box plots (Default: \code{"solid"}). Alternatively, the numbers
-\code{0} to \code{6} can be used (\code{0} for "blank", \code{1} for "solid", etc.).}
-
-\item{outlier.tagging}{Decides whether outliers should be tagged (Default:
-\code{FALSE}).}
-
-\item{outlier.label}{Label to put on the outliers that have been tagged.}
-
-\item{outlier.label.color}{Color for the label to to put on the outliers that
-have been tagged (Default: \code{"black"}).}
-
-\item{outlier.color}{Default aesthetics for outliers (Default: \code{"black"}).}
-
-\item{outlier.coef}{Coefficient for outlier detection using Tukey's method.
-With Tukey's method, outliers are below (1st Quartile) or above (3rd
-Quartile) \code{outlier.coef} times the Inter-Quartile Range (IQR) (Default:
-\code{1.5}).}
-
-\item{mean.plotting}{Logical that decides whether mean is to be highlighted
-and its value to be displayed (Default: \code{TRUE}).}
-
-\item{mean.ci}{Logical that decides whether 95% confidence interval for mean
-is to be displayed (Default: \code{FALSE}).}
-
-\item{mean.size}{Point size for the data point corresponding to mean
-(Default: \code{5}).}
-
-\item{mean.color}{Color for the data point corresponding to mean (Default:
-\code{"darkred"}).}
-
-\item{point.jitter.width}{Numeric specifying the degree of jitter in \code{x}
-direction. Defaults to \code{40\%} of the resolution of the data.}
-
-\item{point.jitter.height}{Numeric specifying the degree of jitter in \code{y}
-direction. Defaults to \code{0.1}.}
-
-\item{point.dodge.width}{Numeric specifying the amount to dodge in the \code{x}
-direction. Defaults to \code{0.60}.}
-
-\item{ggtheme}{A function, \code{ggplot2} theme name. Default value is
-\code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
-extension packages are allowed (e.g., \code{ggthemes::theme_economist()},
-\code{hrbrthemes::theme_ipsum_ps()}, \code{ggthemes::theme_fivethirtyeight()}, etc.).}
-
-\item{ggstatsplot.layer}{Logical that decides whether \code{theme_ggstatsplot}
-theme elements are to be displayed along with the selected \code{ggtheme}
-(Default: \code{TRUE}).}
-
-\item{package}{Name of package from which the palette is desired as string
-or symbol.}
-
-\item{palette}{If a character string (e.g., \code{"Set1"}), will use that named
-palette. If a number, will index into the list of palettes of appropriate
-type. Default palette is \code{"Dark2"}.}
-
-\item{direction}{Either \code{1} or \code{-1}. If \code{-1} the palette will be reversed.}
-
-\item{messages}{Decides whether messages references, notes, and warnings are
-to be displayed (Default: \code{TRUE}).}
-
-\item{...}{Arguments passed on to \code{combine_plots}
-\describe{
-  \item{title.text}{String or plotmath expression to be drawn as title for the
+\item{title.text}{String or plotmath expression to be drawn as title for the
 \emph{combined plot}.}
-  \item{title.color}{Text color for title.}
-  \item{title.size}{Point size of title text.}
-  \item{title.vjust}{Vertical justification for title. Default = \code{0.5} (centered
-on y). \code{0} = baseline at y, 1 = ascender at y.}
-  \item{title.hjust}{Horizontal justification for title. Default = \code{0.5}
-(centered on x). \code{0} = flush-left at x, \code{1} = flush-right.}
-  \item{title.fontface}{The font face (\code{"plain"}, \code{"bold"} (default), \code{"italic"},
-\code{"bold.italic"}) for title.}
-  \item{caption.text}{String or plotmath expression to be drawn as the caption
+
+\item{title.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
+
+\item{caption.text}{String or plotmath expression to be drawn as the caption
 for the \emph{combined plot}.}
-  \item{caption.color}{Text color for caption.}
-  \item{caption.size}{Point size of title text.}
-  \item{caption.vjust}{Vertical justification for caption. Default = \code{0.5}
-(centered on y). \code{0} = baseline at y, \code{1} = ascender at y.}
-  \item{caption.hjust}{Horizontal justification for caption. Default = \code{0.5}
-(centered on x). \code{0} = flush-left at x, \code{1} = flush-right.}
-  \item{caption.fontface}{The font face (\code{"plain"} (default), \code{"bold"}, \code{"italic"},
-\code{"bold.italic"}) for caption.}
-  \item{sub.text}{The label with which the \emph{combined plot} should be annotated.
+
+\item{caption.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
+
+\item{sub.text}{The label with which the \emph{combined plot} should be annotated.
 Can be a plotmath expression.}
-  \item{sub.color}{Text color for annotation label (Default: \code{"black"}).}
-  \item{sub.size}{Point size of annotation text (Default: \code{12}).}
-  \item{sub.x}{The x position of annotation label (Default: \code{0.5}).}
-  \item{sub.y}{The y position of annotation label (Default: \code{0.5}).}
-  \item{sub.hjust}{Horizontal justification for annotation label (Default:
-\code{0.5}).}
-  \item{sub.vjust}{Vertical justification for annotation label (Default:
-\code{0.5}).}
-  \item{sub.vpadding}{Vertical padding. The total vertical space added to the
-label, given in grid units. By default, this is added equally above and
-below the label. However, by changing the y and vjust parameters, this can
-be changed (Default: \code{grid::unit(1, "lines")}).}
-  \item{sub.fontface}{The font face (\code{"plain"} (default), \code{"bold"}, \code{"italic"},
-\code{"bold.italic"}) for the annotation label.}
-  \item{sub.angle}{Angle at which annotation label is to be drawn (Default:
-\code{0}).}
-  \item{sub.lineheight}{Line height of annotation label.}
-  \item{title.caption.rel.heights}{Numerical vector of relative columns heights
-while combining (title, plot, caption).}
-  \item{title.rel.heights}{Numerical vector of relative columns heights while
-combining (title, plot).}
-  \item{caption.rel.heights}{Numerical vector of relative columns heights while
-combining (plot, caption).}
-}}
+
+\item{sub.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
 }
 \description{
 A combined plot of comparison plot created for levels of a
 grouping variable.
 }
 \details{
-For parametric tests, Welch's ANOVA/t-test are used as a default. References:
+For parametric tests, Welch's ANOVA/\emph{t}-test are used as a default (i.e.,
+\code{var.equal = FALSE}).
+References:
 \itemize{
 \item ANOVA: Delacre, Leys, Mora, & Lakens, \emph{PsyArXiv}, 2018
-\item t-test: Delacre, Lakens, & Leys, \emph{International Review of Social Psychology}, 2017
+\item \emph{t}-test: Delacre, Lakens, & Leys,
+\emph{International Review of Social Psychology}, 2017
 }
 
 If robust tests are selected, following tests are used is .
 \itemize{
 \item ANOVA: one-way ANOVA on trimmed means (see \code{?WRS2::t1way})
-\item t-test: Yuen's test for trimmed means (see \code{?WRS2::yuen})
+\item \emph{t}-test: Yuen's test for trimmed means (see \code{?WRS2::yuen})
 }
 
-Variant of this function \code{ggwithinstats} is currently under work. You \emph{can}
-still use this function just to prepare the \strong{plot} for exploratory data
-analysis, but the statistical details displayed in the subtitle will be
-incorrect. You can remove them by adding \code{+ ggplot2::labs(subtitle = NULL)}.
+For more about how the effect size measures (for nonparametric tests) and
+their confidence intervals are computed, see \code{?rcompanion::wilcoxonR}.
+
+For repeated measures designs, use \code{ggwithinstats}.
 }
 \examples{
-
+\donttest{
 # to get reproducible results from bootstrapping
 set.seed(123)
 
@@ -254,15 +232,32 @@ ggstatsplot::grouped_ggbetweenstats(
   x = year,
   y = hwy,
   grouping.var = drv,
-  bf.message = TRUE
+  conf.level = 0.99
+)
+
+# modifying individual plots using `ggplot.component` argument
+ggstatsplot::grouped_ggbetweenstats(
+  data = dplyr::filter(
+    ggstatsplot::movies_long,
+    genre \%in\% c("Action", "Comedy"),
+    mpaa \%in\% c("R", "PG")
+  ),
+  x = genre,
+  y = rating,
+  grouping.var = mpaa,
+  results.subtitle = FALSE,
+  ggplot.component = ggplot2::scale_y_continuous(
+    breaks = seq(1, 9, 1),
+    limits = (c(1, 9))
+  ),
+  messages = FALSE
 )
 }
+}
 \references{
-\url{https://cran.r-project.org/package=ggstatsplot/vignettes/ggbetweenstats.html}
+\url{https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/ggbetweenstats.html}
 }
 \seealso{
-\code{\link{ggbetweenstats}}
-}
-\author{
-Indrajeet Patil
+\code{\link{ggbetweenstats}}, \code{\link{ggwithinstats}},
+\code{\link{grouped_ggwithinstats}}
 }

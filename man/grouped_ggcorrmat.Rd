@@ -5,80 +5,59 @@
 \title{Visualization of a correlalogram (or correlation matrix) for all
 levels of a grouping variable}
 \usage{
-grouped_ggcorrmat(data, cor.vars, cor.vars.names = NULL, grouping.var,
-  title.prefix = "Group", output = "plot", matrix.type = "full",
-  method = "square", corr.method = "pearson", exact = FALSE,
-  continuity = TRUE, beta = 0.1, digits = 2, sig.level = 0.05,
-  p.adjust.method = "none", hc.order = FALSE, hc.method = "complete",
-  lab = TRUE, package = "RColorBrewer", palette = "Dark2",
-  direction = 1, colors = c("#E69F00", "white", "#009E73"),
-  outline.color = "black", ggtheme = ggplot2::theme_bw(),
-  ggstatsplot.layer = TRUE, subtitle = NULL, caption = NULL,
-  caption.default = TRUE, lab.col = "black", lab.size = 5,
-  insig = "pch", pch = 4, pch.col = "black", pch.cex = 11,
-  tl.cex = 12, tl.col = "black", tl.srt = 45,
-  axis.text.x.margin.t = 0, axis.text.x.margin.r = 0,
-  axis.text.x.margin.b = 0, axis.text.x.margin.l = 0,
-  messages = TRUE, ...)
+grouped_ggcorrmat(
+  data,
+  cor.vars = NULL,
+  cor.vars.names = NULL,
+  grouping.var,
+  title.prefix = NULL,
+  output = "plot",
+  ...,
+  plotgrid.args = list(),
+  title.text = NULL,
+  title.args = list(size = 16, fontface = "bold"),
+  caption.text = NULL,
+  caption.args = list(size = 10),
+  sub.text = NULL,
+  sub.args = list(size = 12)
+)
 }
 \arguments{
 \item{data}{Dataframe from which variables specified are preferentially to be
 taken.}
 
 \item{cor.vars}{List of variables for which the correlation matrix is to be
-computed and visualized.}
+computed and visualized. If \code{NULL} (default), all numeric variables from
+\code{data} will be used.}
 
 \item{cor.vars.names}{Optional list of names to be used for \code{cor.vars}. The
 names should be entered in the same order.}
 
-\item{grouping.var}{Grouping variable.}
+\item{grouping.var}{A single grouping variable (can be entered either as a
+bare name \code{x} or as a string \code{"x"}).}
 
-\item{title.prefix}{Character specifying the prefix text for the fixed plot
-title (name of each factor level) (Default: \code{"Group"}).}
+\item{title.prefix}{Character string specifying the prefix text for the fixed
+plot title (name of each factor level) (Default: \code{NULL}). If \code{NULL}, the
+variable name entered for \code{grouping.var} will be used.}
 
-\item{output}{Character that decides expected output from this function:
-\code{"plot"} (for visualization matrix) or \code{"correlations"} (or \code{"corr"} or
-\code{"r"}; for correlation matrix) or \code{"p-values"} (or \code{"p.values"} or \code{"p"};
-for a matrix of \emph{p}-values) or \code{"ci"} (for a tibble with confidence
-intervals for unique correlation pairs; not available for robust
-correlation) or \code{"n"} (or \code{"sample.size"} for a tibble with sample sizes
-for each correlation pair).}
+\item{output}{Character that decides expected output from this function. If
+\code{"plot"}, the visualization matrix will be returned. If \code{"dataframe"} (or
+literally anything other than \code{"plot"}), a dataframe containing all details
+from statistical analyses (e.g., correlation coefficients, statistic
+values, \emph{p}-values, no. of observations, etc.) will be returned.}
 
-\item{matrix.type}{Character, \code{"full"} (default), \code{"upper"} or \code{"lower"}, display
-full matrix, lower triangular or upper triangular matrix.}
-
-\item{method}{Character argument that decides the visualization method of
-correlation matrix to be used. Allowed values are \code{"square"} (default),
-\code{"circle"}}
-
-\item{corr.method}{A character string indicating which correlation
-coefficient is to be computed (\code{"pearson"} (default) or \code{"kendall"} or
-\code{"spearman"}). \code{"robust"} can also be entered but only if \code{output} argument
-is set to either \code{"correlations"} or \code{"p-values"}. The robust correlation
-used is percentage bend correlation (see \code{?WRS2::pball}). Abbreviations
-will also work: \code{"p"} (for parametric/Pearson's \emph{r}), \code{"np"}
-(nonparametric/Spearman's \emph{rho}), \code{"r"} (robust).}
-
-\item{exact}{A logical indicating whether an exact \emph{p}-value should be
-computed. Used for Kendall's \emph{tau} and Spearman's \emph{rho}. For more details,
-see \code{?stats::cor.test}.}
-
-\item{continuity}{A logical. If \code{TRUE}, a continuity correction is used for
-Kendall's \emph{tau} and Spearman's \emph{rho} when not computed exactly (Default:
-\code{TRUE}).}
-
-\item{beta}{A numeric bending constant for robust correlation coefficient
-(Default: \code{0.1}).}
-
-\item{digits}{Decides the number of decimal digits to be displayed (Default:
-\code{2}).}
-
-\item{sig.level}{Significance level (Default: \code{0.05}). If the \emph{p}-value in
+\item{...}{
+  Arguments passed on to \code{\link[=ggcorrmat]{ggcorrmat}}
+  \describe{
+    \item{\code{matrix.type}}{Character, \code{"full"} (default), \code{"upper"} or \code{"lower"},
+display full matrix, lower triangular or upper triangular matrix.}
+    \item{\code{matrix.method}}{The visualization method of correlation matrix to be
+used. Allowed values are \code{"square"} (default) or \code{"circle"}.}
+    \item{\code{sig.level}}{Significance level (Default: \code{0.05}). If the \emph{p}-value in
 \emph{p}-value matrix is bigger than \code{sig.level}, then the corresponding
 correlation coefficient is regarded as insignificant and flagged as such in
-the plot. This argument is relevant only when \code{output = "plot"}.}
-
-\item{p.adjust.method}{What adjustment for multiple tests should be used?
+the plot. Relevant only when \code{output = "plot"}.}
+    \item{\code{p.adjust.method}}{What adjustment for multiple tests should be used?
 (\code{"holm"}, \code{"hochberg"}, \code{"hommel"}, \code{"bonferroni"}, \code{"BH"}, \code{"BY"},
 \code{"fdr"}, \code{"none"}). See \code{stats::p.adjust} for details about why to use
 \code{"holm"} rather than \code{"bonferroni"}). Default is \code{"none"}. If adjusted
@@ -86,148 +65,78 @@ the plot. This argument is relevant only when \code{output = "plot"}.}
 \strong{adjusted} \emph{p}-values will be used for the \strong{upper} triangle, while
 \strong{unadjusted} \emph{p}-values will be used for the \strong{lower} triangle of the
 matrix.}
-
-\item{hc.order}{Logical value. If \code{TRUE}, correlation matrix will be
-hc.ordered using \code{hclust} function (Default is \code{FALSE}).}
-
-\item{hc.method}{The agglomeration method to be used in \code{hclust} (see
-\code{?hclust}).}
-
-\item{lab}{Logical value. If \code{TRUE}, correlation coefficient values will be
-displayed in the plot.}
-
-\item{package}{Name of package from which the palette is desired as string
-or symbol.}
-
-\item{palette}{Name of palette as string or symbol.}
-
-\item{direction}{Either \code{1} or \code{-1}. If \code{-1} the palette will be reversed.}
-
-\item{colors}{A vector of 3 colors for low, mid, and high correlation values.
+    \item{\code{colors}}{A vector of 3 colors for low, mid, and high correlation values.
 If set to \code{NULL}, manual specification of colors will be turned off and 3
 colors from the specified \code{palette} from \code{package} will be selected.}
-
-\item{outline.color}{The outline color of square or circle. Default value is
-\code{"gray"}.}
-
-\item{ggtheme}{A function, \code{ggplot2} theme name. Default value is
-\code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
-extension packages are allowed (e.g., \code{ggthemes::theme_economist()},
-\code{hrbrthemes::theme_ipsum_ps()}, \code{ggthemes::theme_fivethirtyeight()}, etc.).}
-
-\item{ggstatsplot.layer}{Logical that decides whether \code{theme_ggstatsplot}
-theme elements are to be displayed along with the selected \code{ggtheme}
-(Default: \code{TRUE}).}
-
-\item{subtitle}{The text for the plot subtitle.}
-
-\item{caption}{The text for the plot caption. If not specified (if it is
-\code{NULL}, i.e.), a default caption will be shown.}
-
-\item{caption.default}{Logical decides whether the default caption should be
-shown.}
-
-\item{lab.col}{Color to be used for the correlation coefficient labels
-(applicable only when \code{lab = TRUE}).}
-
-\item{lab.size}{Size to be used for the correlation coefficient labels
-(applicable only when \code{lab = TRUE}).}
-
-\item{insig}{Character used to show specialized insignificant correlation
-coefficients (\code{"pch"} (default) or \code{"blank"}). If \code{"blank"}, the
-corresponding glyphs will be removed; if "pch" is used, characters (see
-\code{?pch} for details) will be added on the corresponding glyphs.}
-
-\item{pch}{Decides the glyphs (read point shapes) to be used for
-insignificant correlation coefficients (only valid when \code{insig = "pch"}).
-Default value is \code{pch = 4}.}
-
-\item{pch.col}{The color and the cex (size) of \code{pch} (only valid when
-\code{insig = "pch"}). Defaults are \code{pch.col = "#F0E442"} and \code{pch.cex = 10}.}
-
-\item{pch.cex}{The color and the cex (size) of \code{pch} (only valid when
-\code{insig = "pch"}). Defaults are \code{pch.col = "#F0E442"} and \code{pch.cex = 10}.}
-
-\item{tl.cex}{The size, the color, and the string rotation of
-text label (variable names, i.e.).}
-
-\item{tl.col}{The size, the color, and the string rotation of
-text label (variable names, i.e.).}
-
-\item{tl.srt}{The size, the color, and the string rotation of
-text label (variable names, i.e.).}
-
-\item{axis.text.x.margin.t}{Margins between x-axis and the variable name texts (t: top, r: right, b:
-bottom, l:left), especially useful in case the names are slanted, i.e. when
-the tl.srt is between \code{45} and \code{75} (Defaults: \code{0}, \code{0}, \code{0}, \code{0}, resp.).}
-
-\item{axis.text.x.margin.r}{Margins between x-axis and the variable name texts (t: top, r: right, b:
-bottom, l:left), especially useful in case the names are slanted, i.e. when
-the tl.srt is between \code{45} and \code{75} (Defaults: \code{0}, \code{0}, \code{0}, \code{0}, resp.).}
-
-\item{axis.text.x.margin.b}{Margins between x-axis and the variable name texts (t: top, r: right, b:
-bottom, l:left), especially useful in case the names are slanted, i.e. when
-the tl.srt is between \code{45} and \code{75} (Defaults: \code{0}, \code{0}, \code{0}, \code{0}, resp.).}
-
-\item{axis.text.x.margin.l}{Margins between x-axis and the variable name texts (t: top, r: right, b:
-bottom, l:left), especially useful in case the names are slanted, i.e. when
-the tl.srt is between \code{45} and \code{75} (Defaults: \code{0}, \code{0}, \code{0}, \code{0}, resp.).}
-
-\item{messages}{Decides whether messages references, notes, and warnings are
+    \item{\code{pch}}{Decides the point shape to be used for insignificant correlation
+coefficients (only valid when \code{insig = "pch"}). Default: \code{pch = "cross"}.}
+    \item{\code{ggcorrplot.args}}{A list of additional (mostly aesthetic) arguments that
+will be passed to \code{ggcorrplot::ggcorrplot} function. The list should avoid
+any of the following arguments since they are already internally being used
+by \code{ggstatsplot}: \code{corr}, \code{method}, \code{p.mat}, \code{sig.level}, \code{ggtheme},
+\code{colors}, \code{matrix.type}, \code{lab}, \code{pch}, \code{legend.title}, \code{digits}.}
+    \item{\code{messages}}{Decides whether messages references, notes, and warnings are
 to be displayed (Default: \code{TRUE}).}
+    \item{\code{type}}{Type of association between paired samples required
+("\code{"parametric"}: Pearson's product moment correlation coefficient" or
+"\code{"nonparametric"}: Spearman's rho" or "\code{"robust"}: percentage bend
+correlation coefficient" or "\code{"bayes"}: Bayes Factor for Pearson's \emph{r}").
+Corresponding abbreviations are also accepted: \code{"p"} (for
+parametric/pearson), \code{"np"} (nonparametric/spearman), \code{"r"} (robust),
+\code{"bf"} (for bayes factor), resp.}
+    \item{\code{beta}}{bending constant (Default: \code{0.1}). For more, see \code{?WRS2::pbcor}.}
+    \item{\code{k}}{Number of digits after decimal point (should be an integer)
+(Default: \code{k = 2}).}
+    \item{\code{conf.level}}{Scalar between 0 and 1. If unspecified, the defaults return
+\verb{95\%} lower and upper confidence intervals (\code{0.95}).}
+    \item{\code{bf.prior}}{A number between \code{0.5} and \code{2} (default \code{0.707}), the prior
+width to use in calculating Bayes factors.}
+    \item{\code{package}}{Name of package from which the palette is desired as string
+or symbol.}
+    \item{\code{palette}}{Name of palette as string or symbol.}
+    \item{\code{ggtheme}}{A function, \code{ggplot2} theme name. Default value is
+\code{ggplot2::theme_bw()}. Any of the \code{ggplot2} themes, or themes from
+extension packages are allowed (e.g., \code{ggthemes::theme_fivethirtyeight()},
+\code{hrbrthemes::theme_ipsum_ps()}, etc.).}
+    \item{\code{ggstatsplot.layer}}{Logical that decides whether \code{theme_ggstatsplot}
+theme elements are to be displayed along with the selected \code{ggtheme}
+(Default: \code{TRUE}). \code{theme_ggstatsplot} is an opinionated theme layer that
+override some aspects of the selected \code{ggtheme}.}
+    \item{\code{ggplot.component}}{A \code{ggplot} component to be added to the plot prepared
+by \code{ggstatsplot}. This argument is primarily helpful for \code{grouped_} variant
+of the current function. Default is \code{NULL}. The argument should be entered
+as a function.}
+    \item{\code{subtitle}}{The text for the plot subtitle. Will work only if
+\code{results.subtitle = FALSE}.}
+    \item{\code{caption}}{The text for the plot caption.}
+  }}
 
-\item{...}{Arguments passed on to \code{combine_plots}
-\describe{
-  \item{title.text}{String or plotmath expression to be drawn as title for the
+\item{plotgrid.args}{A list of additional arguments to \code{cowplot::plot_grid}.}
+
+\item{title.text}{String or plotmath expression to be drawn as title for the
 \emph{combined plot}.}
-  \item{title.color}{Text color for title.}
-  \item{title.size}{Point size of title text.}
-  \item{title.vjust}{Vertical justification for title. Default = \code{0.5} (centered
-on y). \code{0} = baseline at y, 1 = ascender at y.}
-  \item{title.hjust}{Horizontal justification for title. Default = \code{0.5}
-(centered on x). \code{0} = flush-left at x, \code{1} = flush-right.}
-  \item{title.fontface}{The font face (\code{"plain"}, \code{"bold"} (default), \code{"italic"},
-\code{"bold.italic"}) for title.}
-  \item{caption.text}{String or plotmath expression to be drawn as the caption
+
+\item{title.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
+
+\item{caption.text}{String or plotmath expression to be drawn as the caption
 for the \emph{combined plot}.}
-  \item{caption.color}{Text color for caption.}
-  \item{caption.size}{Point size of title text.}
-  \item{caption.vjust}{Vertical justification for caption. Default = \code{0.5}
-(centered on y). \code{0} = baseline at y, \code{1} = ascender at y.}
-  \item{caption.hjust}{Horizontal justification for caption. Default = \code{0.5}
-(centered on x). \code{0} = flush-left at x, \code{1} = flush-right.}
-  \item{caption.fontface}{The font face (\code{"plain"} (default), \code{"bold"}, \code{"italic"},
-\code{"bold.italic"}) for caption.}
-  \item{sub.text}{The label with which the \emph{combined plot} should be annotated.
+
+\item{caption.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
+
+\item{sub.text}{The label with which the \emph{combined plot} should be annotated.
 Can be a plotmath expression.}
-  \item{sub.color}{Text color for annotation label (Default: \code{"black"}).}
-  \item{sub.size}{Point size of annotation text (Default: \code{12}).}
-  \item{sub.x}{The x position of annotation label (Default: \code{0.5}).}
-  \item{sub.y}{The y position of annotation label (Default: \code{0.5}).}
-  \item{sub.hjust}{Horizontal justification for annotation label (Default:
-\code{0.5}).}
-  \item{sub.vjust}{Vertical justification for annotation label (Default:
-\code{0.5}).}
-  \item{sub.vpadding}{Vertical padding. The total vertical space added to the
-label, given in grid units. By default, this is added equally above and
-below the label. However, by changing the y and vjust parameters, this can
-be changed (Default: \code{grid::unit(1, "lines")}).}
-  \item{sub.fontface}{The font face (\code{"plain"} (default), \code{"bold"}, \code{"italic"},
-\code{"bold.italic"}) for the annotation label.}
-  \item{sub.angle}{Angle at which annotation label is to be drawn (Default:
-\code{0}).}
-  \item{sub.lineheight}{Line height of annotation label.}
-  \item{title.caption.rel.heights}{Numerical vector of relative columns heights
-while combining (title, plot, caption).}
-  \item{title.rel.heights}{Numerical vector of relative columns heights while
-combining (title, plot).}
-  \item{caption.rel.heights}{Numerical vector of relative columns heights while
-combining (plot, caption).}
-}}
+
+\item{sub.args}{A list of additional arguments
+provided to \code{title}, \code{caption} and \code{sub}, resp.}
 }
 \value{
-Correlation matrix plot or correlation coefficient matrix or matrix
-of p-values.
+Correlation matrix plot or a dataframe containing results from
+pairwise correlation tests. The package internally uses
+\code{ggcorrplot::ggcorrplot} for creating the visualization matrix, while the
+correlation analysis is carried out using the \code{correlation::correlation}
+function.
 }
 \description{
 Helper function for \code{ggstatsplot::ggcorrmat} to apply this
@@ -235,48 +144,31 @@ function across multiple levels of a given factor and combining the
 resulting plots using \code{ggstatsplot::combine_plots}.
 }
 \examples{
+\donttest{
+# for reproducibility
+set.seed(123)
 
-# for getting plot
+# for plot
 ggstatsplot::grouped_ggcorrmat(
-  data = ggplot2::msleep,
-  grouping.var = vore,
-  cor.vars = sleep_total:bodywt,
-  corr.method = "r",
-  p.adjust.method = "holm",
-  colors = NULL,
-  package = "wesanderson",
-  palette = "BottleRocket2",
-  nrow = 2
-)
-
-# for getting correlations
-ggstatsplot::grouped_ggcorrmat(
-  data = ggplot2::msleep,
-  grouping.var = vore,
-  cor.vars = sleep_total:bodywt,
-  output = "correlations"
-)
-
-# for getting confidence intervals
-# if **robust** correlation is selected, confidence intervals will not be
-# available
-# it will work for all other correlation types
-ggstatsplot::grouped_ggcorrmat(
-  data = datasets::iris,
+  data = iris,
   grouping.var = Species,
-  corr.method = "r",
-  p.adjust.method = "holm",
-  cor.vars = Sepal.Length:Petal.Width,
-  output = "ci"
+  type = "robust",
+  p.adjust.method = "holm"
+)
+
+# for dataframe
+ggstatsplot::grouped_ggcorrmat(
+  data = ggplot2::msleep,
+  grouping.var = vore,
+  type = "bayes",
+  output = "dataframe"
 )
 }
+}
 \references{
-\url{https://cran.r-project.org/package=ggstatsplot/vignettes/ggcorrmat.html}
+\url{https://indrajeetpatil.github.io/ggstatsplot/articles/web_only/ggcorrmat.html}
 }
 \seealso{
 \code{\link{ggcorrmat}}, \code{\link{ggscatterstats}},
 \code{\link{grouped_ggscatterstats}}
-}
-\author{
-Indrajeet Patil
 }
